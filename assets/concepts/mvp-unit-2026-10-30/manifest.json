@@ -1,0 +1,30 @@
+{
+  "project": "苔灯镇 · Mosslight",
+  "date": "2026-10-30",
+  "status": "Minimal visual MVP retained as a planting/light study. Static concept only, not a playable build or production sprite sheet. Its character rendering is superseded by the selected B/C pixel-character v3 references.",
+  "current_character_reference": "../character-pixel-2026-10-30/manifest.json",
+  "generation_mode": "built-in image_gen",
+  "file": "minimal-growing-unit-v1.png",
+  "reference": "../a-style-preview-2026-10-29/b-a-style-and-proportions.png",
+  "source_generated_filename": "exec-e76c5369-5d03-4b22-b34c-4eadac5169e7.png",
+  "sha256": "d70e9c165e929ad01791fbbe64f58cdb17ad0ee8454df41d66012c750c2a79b0",
+  "scope": [
+    "One keeper using the existing B costume and A-adjusted proportions",
+    "One active fixed stone-and-moss garden lantern",
+    "One warm planting cell containing a hanging glow-bell",
+    "One shaded planting cell containing a ground-hugging moon-moss patch",
+    "Connected ground for approaching both planting cells"
+  ],
+  "deliberate_test_conditions": [
+    "The handheld lantern is unlit in this image to isolate the fixed light; this does not change the game rules for handheld lights",
+    "The reduced two-cell vignette is not the approved 12-cell layout",
+    "No HUD, growth animation, input, gameplay or automatic harvesting is represented"
+  ],
+  "review": [
+    "Moon-moss uses a low, dense silhouette instead of the earlier tall blue flowers",
+    "Warm illumination reaches the glow-bell cell and leaves the moon-moss cell visibly outside the warm pool",
+    "Character, fixed lamp and crops remain recognizable without adding a full cottage or pond scene",
+    "Exact pixel grid, interaction distances and light radius still require runtime verification"
+  ],
+  "prompt": "Use case: precise-object-edit.\nAsset type: one minimal visual MVP scene for the original cozy pixel game Mosslight, derived from the attached existing B scene. This is a visual approval sample, not a full map or a UI mockup.\nInput image 1 is the EDIT TARGET and identity/style anchor. Recompose it into a much smaller, quieter woodland planting vignette. Preserve its protagonist's recognizable face, green round hood, peach neckerchief, cream tunic, brown satchel and boots, and its corrected slender chibi body proportions with visible legs. Preserve the fine storybook pixel craftsmanship, mossy stone materials, teal-green night palette and overhead three-quarter game camera. Change the scope, crop shapes and lighting as specified below.\nShow exactly ONE protagonist, ONE fixed garden lantern, ONE small square planting cell containing ONE golden glow-bell plant, and ONE separate same-size square planting cell containing ONE low moon-moss cluster. Together they are one small gameplay unit. Landscape 16:9, full-frame ground background, no horizon and no floating isometric platform. Use a closer view so the four subjects are comfortably readable while all are fully visible.\nComposition: use a simple connected clearing with a few stepping stones and quiet moss/fern edges. The fixed lantern stands near the warm planting cell. The second planting cell is clearly beyond that lamp's warm light pool, separated by walkable ground. The protagonist stands on the accessible path between/in front of the cells, without blocking either crop. Every cell has a clear reachable edge; no enclosing fence. Keep the surroundings sparse and visually subordinate.\nFixed lantern: recognizable squat rough stone pedestal, rounded green moss cap and amber glazed light chamber, matching the reference's functional garden lamp. It is the ONLY active light source. Warm amber light clearly includes the entire glow-bell cell and stops well short of the moon-moss cell. Make the lighting boundary visually legible through pixel shading of the ground, not a drawn diagram ring. The main character may retain their small handheld lantern as an unlit prop with dark glass, but it casts NO light.\nGlow-bell: one rooted plant with a curved green stem and one plump downward-hanging golden bell blossom, warm pale leaves and clearly visible soil underneath. Retain the familiar bell silhouette.\nMoon-moss: replace the original reference's tall blue pompon flowers with a very LOW, ground-hugging mound of dense blue-green velvety moss, tiny irregular fronds, softly cool highlights, under one fifth of the standing character's height. No stalks, no large leaves, no floating orb, no mushroom cap, no flowers. Its diffuse highlights do not cast a light pool. The shade remains readable in cool ambient night light, never pitch black.\nVisual finish: deliberate square pixel clusters and stepped silhouettes, restrained material textures, no blur, no painterly smoothing, no 3D. Make the plant species recognizable by silhouette even without color. Do not copy the reference's tall blue flowers anywhere.\nOmit the cottage, pond, waterfalls, dock, extra lamps, pets, flowers, glowing particles, sparkles, additional beds or additional characters. No HUD, labels, text, arrows, logos, borders, inset panels or watermark. One cohesive attractive in-world scene, not a comparison sheet or asset grid."
+}

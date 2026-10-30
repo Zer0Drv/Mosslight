@@ -1,12 +1,25 @@
 {
   "project": "苔灯镇 · Mosslight",
-  "status": "Original A/B/C selected as the primary art references by the user. Production assets and animation are not yet implemented.",
-  "selected_reference_set": "original_abc",
+  "status": "User adopted original A plus the B/C pixel-character v3 revision as the current art reference set on 2026-10-30. Production sprites, tiles and animation are not yet implemented.",
+  "selected_reference_set": "original_a_with_bc_pixel_v3",
+  "selection_date": "2026-10-30",
+  "user_confirmation": "就先用这一版，更新相关信息然后推送仓库",
+  "selected_references": {
+    "A": "a-storybook-cg.png",
+    "B": "character-pixel-2026-10-30/b-a-pixel-character-v3.png",
+    "C": "character-pixel-2026-10-30/c-a-pixel-character-v3.png"
+  },
+  "selection_scope": "A remains the CG atmosphere and character pixel-language benchmark. B/C v3 are the selected scene and costume references. These concept images do not override the 12-cell layout, ground-hugging moon-moss design, functional-light rules or runtime geometry.",
   "a_style_comparison_preview": "a-style-preview-2026-10-29/manifest.json",
+  "minimal_visual_mvp_preview": "mvp-unit-2026-10-30/manifest.json",
+  "selected_character_pixel_revision": "character-pixel-2026-10-30/manifest.json",
+  "character_rendering_rule": "Use the original A keeper as the character pixel-art reference: small block-shaped eyes, restrained color planes, stepped silhouettes and clustered clothing folds. Preserve the B/C costume identities. Avoid smooth anime-like faces and fine woven or continuous stitched textures.",
+  "rejected_character_detail_study": "character-detail-2026-10-30/manifest.json",
   "generation_mode": "built-in image_gen",
   "consistency_study": "consistency-v1/manifest.json",
   "consistency_study_status": "Archived experiment, not selected. Its restrictive identity rules are not current production rules.",
-  "full_prompt_format": "Concatenate shared_prompt and the variant prompt_suffix without any additional separator.",
+  "original_generation_record_note": "The shared_prompt and variants below preserve the original A/B/C generation provenance. Original B/C images are historical source designs; use selected_references above for the current accepted files and the selected revision manifest for its prompts.",
+  "full_prompt_format": "For the original generation only: concatenate shared_prompt and the variant prompt_suffix without any additional separator.",
   "shared_prompt": "Use case: stylized-concept. Asset type: preview-only art-direction concept for an original cozy 2D pixel farming game named Mosslight. Create a polished landscape 16:9 game-view concept. This is an ART STYLE PROPOSAL, not a game UI. Must be authentic crisp pixel art: clearly visible square pixel clusters, clean stepped silhouettes, restrained palette ramps, selective pixel outlines, no smooth painted rendering, no 3D, no blur, no vector look. An overhead 3/4 top-down 2D RPG camera with no horizon, not an isometric diorama. Same core scene for fair comparison: a forest clearing at gentle night, a small inhabited cottage upper left with a glowing round window, a small teal pond upper right, curved stepping-stone walkway through the middle, two compact planting beds near a standing moss lantern, a very cute chibi hooded lantern keeper slightly below center, round moon-moss plants glowing softly cool blue in shade, bell-shaped crops softly warm golden inside the lantern light. Forest trees frame the edges without hiding the gameplay. Clearly readable walking space. Main character is full body, two heads tall, large hood and tiny feet, tiny black eyes, a warm small hand lantern. Quiet, cozy, a little mysterious and SAFE; no scary forest. Soft nighttime illumination still bright enough to read all shapes. Original designs, no franchise characters, no borrowed recognizable game assets. No text, no logos, no HUD, no labels, no border, no watermark.",
   "variants": [
     {
@@ -41,15 +54,17 @@
   "character_appearance_candidates": [
     {
       "id": "woodland_outfit",
-      "reference": "b-dumpling-forest.png",
+      "reference": "character-pixel-2026-10-30/b-a-pixel-character-v3.png",
+      "original_reference": "b-dumpling-forest.png",
       "features": "Round sage hood, peach neckerchief and warm natural colors.",
-      "status": "Retained design candidate; not implemented."
+      "status": "Selected current appearance reference. Outfit switching and character selection are not implemented."
     },
     {
       "id": "starlight_outfit",
-      "reference": "c-candy-starlight.png",
+      "reference": "character-pixel-2026-10-30/c-a-pixel-character-v3.png",
+      "original_reference": "c-candy-starlight.png",
       "features": "Original periwinkle pointed hood, peach pompom and star-night clothing silhouette.",
-      "status": "Retained for an alternate outfit or initial appearance preset; not implemented or assigned a separate character identity."
+      "status": "Selected current appearance reference for an alternate outfit or initial appearance preset; not implemented or assigned a separate character identity."
     }
   ],
   "appearance_guidance": "Prefer two outfits or appearance presets sharing base anatomy, facial identity, animation timing and collision dimensions. Separate playable characters or NPCs require a later identity and narrative decision. Entering another region must not automatically change the equipped outfit."

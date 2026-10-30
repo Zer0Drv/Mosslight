@@ -1,0 +1,46 @@
+{
+  "project": "苔灯镇 · Mosslight",
+  "date": "2026-10-30",
+  "status": "Adopted by the user on 2026-10-30 as the current B/C character and scene art references, alongside original A. These remain concept images, not production sprite sheets or runtime assets.",
+  "adopted_on": "2026-10-30",
+  "user_confirmation": "就先用这一版，更新相关信息然后推送仓库",
+  "adoption_scope": "Use these B/C images for the current character pixel treatment, costumes and regional scene style. Actual planting layouts, low moon-moss silhouette, functional lighting, collision and runtime pixel dimensions remain governed by the current design documents.",
+  "generation_mode": "built-in image_gen",
+  "user_request": "已经脱离像素风了，这是第一版图片，人物按照这个生成",
+  "authoritative_character_reference": "../a-storybook-cg.png",
+  "attachment_provenance": {
+    "filename": "codex-clipboard-278e1ebe-f772-42d6-8903-d27fa079ba70.png",
+    "decoded_pixels": "User attachment and the repository original A have identical 1672x941 RGB pixels.",
+    "rgb_sha256": "674f72b8fb485f4da7aa8aec5cecafd493ce27ea088d4b04bb855acd65cee787"
+  },
+  "reference_priority": [
+    "Original A defines face, anatomy, pixel size, clustered shading and stepped outlines.",
+    "B/C keep their existing costume silhouettes, palettes, pose and environment.",
+    "The rejected detailed v2 images are not rendering references."
+  ],
+  "supersedes": "../character-detail-2026-10-30/manifest.json",
+  "variants": [
+    {
+      "id": "B",
+      "file": "b-a-pixel-character-v3.png",
+      "source_generated_filename": "exec-c394d7ad-6c24-4f11-95bf-4223db29f2e1.png",
+      "edit_target": "../a-style-preview-2026-10-29/b-a-style-and-proportions.png",
+      "preserve": "Round sage-green hood, peach neck cloth, cream tunic, green outer clothing, brown satchel and boots; green forest scene.",
+      "prompt": "Use case: precise-object-edit.\nEdit ONLY the small protagonist in image 1. Image 2 is the user's exact FIRST A image and the authoritative character reference.\nThe previous attempt was rejected for losing pixel-art style. Do not use its smooth, highly rendered face or detailed stitching style. Recreate the protagonist using the SAME visible pixel construction as the small keeper in image 2: match A's face design, brown hair shapes, head-to-body anatomy, limb shapes, cloth block shading, outline thickness and effective pixel size. This is a faithful sprite-style translation of A's keeper into the target scene, not a new anime interpretation.\nFACE: copy A's restrained small block-shaped dark eyes, simple peach skin planes, tiny block blush, sparse mouth/nose suggestion and grouped brown fringe. No large glossy eyes, iris rendering, curved eyelash lines, smooth skin gradients or finely modeled nose/lips. Keep the face charming by its original pixel shapes.\nCLOTHES: match A's hood, cloak and tunic construction with deliberate grouped pixel blocks: folded hood rim, collar, neck cloth, sleeves, hanging hem, leather bag/strap and boots. Use a small number of discrete shades per material. The detail should be A's readable fold and edge shapes; no fine woven textures, continuous seam lines, decorative stitching, miniature buckles everywhere, painterly brushstrokes or smooth highlights.\nPIXEL LANGUAGE: strong intentional stepped silhouette at the SAME scale as A; visible rectangular color clusters, crisp unblended edges, sparse selective outlines. No anti-aliased cartoon contours, no gradient airbrushing, no subpixel detailing, no blur or sharpen-filter treatment. Do not add a fake pixel grid over a smooth drawing.\nPreserve the target character's small footprint, feet position, overall body height and lantern-carrying pose; do not enlarge the character or its head to manufacture detail. Keep A's short clearly separated legs and draping tunic. Both character and environment must look made from the same pixel language.\nKeep all non-character content of image 1 as closely unchanged as possible: full landscape frame, cottage, roof, doors/windows, pond, waterfall, dock, flowers, beds, lamps, roads, trees and lighting. Same perspective, no zoom and no crop. Keep the original warm handheld lantern, with its brass frame and glass represented by a few blocky pixels, as in A.\nOne full scene. No text, labels, inset portrait, comparison panels, border or watermark. Prioritize matching image 2 over inventing additional detail.\nB variant: retain the sage/olive GREEN rounded hood, peach neck cloth, cream tunic, green outer cloth, brown leather bag and boots. The face and body should look like A's actual keeper wearing B's outfit. Keep the green forest and rounded moss-roof cottage unchanged."
+    },
+    {
+      "id": "C",
+      "file": "c-a-pixel-character-v3.png",
+      "source_generated_filename": "exec-61cecc35-f44b-426d-be31-7351922b86e4.png",
+      "edit_target": "../a-style-preview-2026-10-29/c-a-style-and-proportions.png",
+      "preserve": "Purple pointed hood with peach pompom, purple outer clothing, cream tunic, brown boots; violet forest scene.",
+      "prompt": "Use case: precise-object-edit.\nEdit ONLY the small protagonist in image 1. Image 2 is the user's exact FIRST A image and the authoritative character reference.\nThe previous attempt was rejected for losing pixel-art style. Do not use its smooth, highly rendered face or detailed stitching style. Recreate the protagonist using the SAME visible pixel construction as the small keeper in image 2: match A's face design, brown hair shapes, head-to-body anatomy, limb shapes, cloth block shading, outline thickness and effective pixel size. This is a faithful sprite-style translation of A's keeper into the target scene, not a new anime interpretation.\nFACE: copy A's restrained small block-shaped dark eyes, simple peach skin planes, tiny block blush, sparse mouth/nose suggestion and grouped brown fringe. No large glossy eyes, iris rendering, curved eyelash lines, smooth skin gradients or finely modeled nose/lips. Keep the face charming by its original pixel shapes.\nCLOTHES: match A's hood, cloak and tunic construction with deliberate grouped pixel blocks: folded hood rim, collar, neck cloth, sleeves, hanging hem, leather bag/strap and boots. Use a small number of discrete shades per material. The detail should be A's readable fold and edge shapes; no fine woven textures, continuous seam lines, decorative stitching, miniature buckles everywhere, painterly brushstrokes or smooth highlights.\nPIXEL LANGUAGE: strong intentional stepped silhouette at the SAME scale as A; visible rectangular color clusters, crisp unblended edges, sparse selective outlines. No anti-aliased cartoon contours, no gradient airbrushing, no subpixel detailing, no blur or sharpen-filter treatment. Do not add a fake pixel grid over a smooth drawing.\nPreserve the target character's small footprint, feet position, overall body height and lantern-carrying pose; do not enlarge the character or its head to manufacture detail. Keep A's short clearly separated legs and draping tunic. Both character and environment must look made from the same pixel language.\nKeep all non-character content of image 1 as closely unchanged as possible: full landscape frame, cottage, roof, doors/windows, pond, waterfall, dock, flowers, beds, lamps, roads, trees and lighting. Same perspective, no zoom and no crop. Keep the original warm handheld lantern, with its brass frame and glass represented by a few blocky pixels, as in A.\nOne full scene. No text, labels, inset portrait, comparison panels, border or watermark. Prioritize matching image 2 over inventing additional detail.\nC variant: retain the PURPLE pointed hood with peach pompom, purple outer cloth, cream inner tunic, peach neck cloth and brown boots. Use A's actual keeper face and body in this C outfit. The hood point and pompom must also use A-like stepped pixel clusters, never smooth knitted rendering. Hat height is not anatomical head height. Keep the violet forest, curled purple roof, stars and regional palette unchanged; do not change the outfit to green."
+    }
+  ],
+  "review_scope": [
+    "Small block-shaped dark eyes and restrained skin color planes",
+    "Visible stepped hair and hood edges",
+    "Clothing construction expressed through grouped pixel shapes rather than fine-line weaving",
+    "Existing environment layout and character position retained; no claim of pixel-identical unedited background"
+  ]
+}

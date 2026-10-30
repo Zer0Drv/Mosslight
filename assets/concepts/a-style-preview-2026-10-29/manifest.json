@@ -1,7 +1,8 @@
 {
   "project": "苔灯镇 · Mosslight",
   "date": "2026-10-29",
-  "status": "Comparison previews requested by the user. Not adopted as the main art direction and not runtime assets.",
+  "status": "Historical style/proportion comparison previews. Superseded by the user-adopted B/C pixel-character v3 revision on 2026-10-30. Retain only as provenance; not runtime assets.",
+  "superseded_by": "../character-pixel-2026-10-30/manifest.json",
   "generation_mode": "built-in image_gen",
   "request": "Render original B and C in original A's detailed pixel-storybook style, while preserving each scene's layout, architecture, outfit and regional palette.",
   "user_refinement": "Match the characters' body proportions to original A as well. Hat points and pompoms do not count toward the anatomical proportions.",
