@@ -13,12 +13,22 @@
       "previews/gameplay_states.png",
       "previews/asset_board.png",
       "previews/appearance_menu.png",
-      "previews/restoration_complete.png"
+      "previews/restoration_complete.png",
+      "logs/mvp-journal.png",
+      "logs/mvp-companion.png",
+      "logs/mvp-complete.png"
     ],
     "audio": "20 WAV reproducible SHA256, PCM peak, DC, silence and seam checks passed; listening judgement remains subjective",
     "environment_note": "System root certificate store error printed; no script or resource errors in final import and test logs. Isolated APPDATA/LOCALAPPDATA under logs/godot-home and --fresh-garden protect real user data.",
     "appearance_menu": "PASS: paused button signals change outfit, UI selection synchronized, no garden/collision mutation, selection retained after resume",
-    "runtime_integration": "22/22 runtime PNG and 18/18 gameplay WAV referenced by game scripts; audition and music sketch excluded"
+    "runtime_integration": "22/22 runtime PNG and 19 gameplay WAV integrated: 18 v2 streams plus independent under-lamp music; audition and music sketch excluded",
+    "merged_branches": [
+      "main",
+      "codex/slice-a-mvp",
+      "wip/m0-save-v2"
+    ],
+    "migration_test": "PASS strict 49-cell v1, layout compensation, WIP-v2/future-version refusal, no overwrite",
+    "mvp_test": "PASS 12 cells, day/dusk/offline/companion/journal; ideal repairs 240/720 seconds"
   },
   "sources": [
     {

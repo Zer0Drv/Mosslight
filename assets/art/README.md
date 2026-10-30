@@ -20,9 +20,9 @@
 
 22张运行PNG均已在游戏代码中接入。外观选择仅改变绘制，保持原有移动、脚底碰撞与交互范围，不消耗资源；选择在本次运行内保留，重新启动恢复场景默认外观。声音试听合辑与备用伴灯草稿不作为普通游玩内容播放。
 
-地表、石路、池塘、栅栏、雾气、交互框和光效继续由程序绘制，与贴图共用原来的640×360逻辑分辨率、整数缩放和最近邻过滤。固定灯的经营光域、作物规则、人物碰撞、存档和苗床布局不由图片决定。本轮未实施12格/M1玩法迁移，也未声称完成未来地区、NPC、战斗或四季资源。
+地表、石路、池塘、栅栏、雾气、交互框和光效继续由程序绘制，与贴图共用原来的640×360逻辑分辨率、整数缩放和最近邻过滤。固定灯的经营光域、作物规则、人物碰撞、存档和苗床布局不由图片决定。素材生成阶段没有改动玩法；本次三分支整合已接入切片A的12格/M1玩法迁移，生长90/120秒、每株收1、两次修灯12+8和24+16。未来地区、NPC、战斗或四季素材仍未完成。
 
-声音见 [音频说明](../audio/README.md)：20个新WAV，其中18个运行声音；备用伴灯音色草稿不在普通游玩中播放。
+声音见[音频说明](../audio/README.md)：v2包20个WAV中18个为运行声音；整合版另接入独立`under_lamp.wav`，共19个运行声音。备用伴灯音色草稿与试听不在普通游玩中播放。
 
 ## 查看
 
@@ -49,6 +49,8 @@
 & $engine --headless --path . --editor --import
 & $engine --headless --path . --script res://tests/smoke_test.gd
 & $engine --headless --path . --script res://tests/save_test.gd
+& $engine --headless --path . --script res://tests/migration_test.gd
+& $engine --headless --path . --script res://tests/mvp_test.gd
 # 画面检查需要图形后端；必须使用 fresh-garden，脚本会自动退出。
 & $engine --path . --script res://tools/capture_art_preview.gd -- --fresh-garden
 python tools/generate_audio.py
@@ -56,7 +58,9 @@ python tools/generate_audio.py
 
 `source/` 与 `previews/` 带有 `.gdignore`，避免把大原图或检查画面打进游戏。所有运行图均已保留Godot导入配置，不生成mipmap。
 
-## 本轮验证
+## 素材接入验证与合并复验
+
+以下为素材接入时已完成的检查；12格玩法、手账、灯下模式与素材合并后的完整复验结果统一登记在[切片验收记录](../../docs/mvp-validation.md)，不把合并前通过记录代替整合版结果。
 
 - Godot 4.7.2标准版导入和OpenGL实机渲染完成；素材总览与640×360画面已目视检查。
 - Smoke：种植、成长、资源、修灯、输入、碰撞、暂停、声音成败映射与60/120fps脚步回归通过；暂停换装、选中状态、恢复后保留外观及资源/碰撞不变检查通过。

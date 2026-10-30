@@ -29,21 +29,23 @@ func _run() -> void:
 	_check_missing_save(save)
 	var source := GardenState.new()
 	source.select_crop("glow_bell")
+	source.tutorial_seen = ["garden_intro", "companion_intro"]
 	source.advance(120.0)
-	source.plant_or_harvest(Vector2i(34, 23))
+	source.plant_or_harvest(Vector2i(14, 26))
 	source.interact_lantern(0)
-	var first_snapshot := source.snapshot().duplicate(true)
 	_check(save.save_state(source, true) == OK, "First file save must succeed.")
+	var first_snapshot := source.snapshot().duplicate(true)
 	_check(FileAccess.file_exists(_path), "First save must create the primary JSON file.")
 	_check(not FileAccess.file_exists(_path + ".tmp"), "Successful save must consume its temporary file.")
 	_check_loaded(save, first_snapshot, true, false, "First round trip")
 
 	source.interact_lantern(0)
-	source.plant_or_harvest(Vector2i(28, 20))
+	source.plant_or_harvest(Vector2i(28, 18))
 	source.select_crop("moon_moss")
 	var second_snapshot := source.snapshot().duplicate(true)
 	_check(first_snapshot != second_snapshot, "Overwrite fixture must contain changed gameplay state.")
 	_check(save.save_state(source, false) == OK, "Replacing an existing save must succeed on Windows.")
+	second_snapshot = source.snapshot().duplicate(true)
 	_check(not FileAccess.file_exists(_path + ".tmp"), "Overwrite must consume its temporary file.")
 	_check(FileAccess.file_exists(_path + ".bak"), "Overwrite must retain the previous save as a backup.")
 	_check_loaded(save, second_snapshot, false, false, "Overwrite round trip")
@@ -52,6 +54,8 @@ func _run() -> void:
 	if _write_text(_path, "{broken JSON"):
 		_check_loaded(save, first_snapshot, true, true, "Corrupted primary backup recovery")
 		_check(save.save_state(source, false) == OK, "Saving after backup recovery must replace the bad primary.")
+		# A successful disk write refreshes saved_at; this run may cross a second.
+		second_snapshot = source.snapshot().duplicate(true)
 		_check_loaded(save, second_snapshot, false, false, "Save after recovery")
 		_check_loaded(GardenSave.new(_path + ".bak"), first_snapshot, true, false, "Bad primary must not replace the good backup")
 	if _remove_own_file(_path):

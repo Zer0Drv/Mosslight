@@ -4,6 +4,7 @@ extends Node
 ## Muting this node never changes the project's shared audio buses.
 
 const AMBIENCE: AudioStreamWAV = preload("res://assets/audio/v2/forest_night.wav")
+const COMPANION: AudioStreamWAV = preload("res://assets/audio/under_lamp.wav")
 const CUES: Dictionary[String, AudioStreamWAV] = {
 	"plant": preload("res://assets/audio/v2/plant.wav"),
 	"harvest_moon": preload("res://assets/audio/v2/harvest_moon.wav"),
@@ -33,11 +34,17 @@ const AMBIENCE_VOLUME_DB: float = -19.0
 const CUE_VOLUME_DB: float = -12.0
 const FOOTSTEP_VOLUME_DB: float = -23.0
 const STEP_SPACING: float = 23.0
+const COMPANION_VOLUME_DB: float = -20.0
+const COMPANION_FADE_IN: float = 8.0
+const COMPANION_FADE_OUT: float = 3.0
 
 var _muted: bool = false
 var _headless: bool = false
 var _ambience_player: AudioStreamPlayer
 var _footstep_player: AudioStreamPlayer
+var _companion_player: AudioStreamPlayer
+var _companion_tween: Tween
+var _companion_active := false
 var _voices: Array[AudioStreamPlayer] = []
 var _next_voice: int = 0
 var _last_step_position := Vector2.ZERO
@@ -67,6 +74,16 @@ func _ready() -> void:
 	_ambience_player.play()
 	_ambience_player.stream_paused = _muted
 	create_tween().tween_property(_ambience_player, "volume_db", AMBIENCE_VOLUME_DB, 1.6)
+	# Companion music has its own player; cue/footstep voices never interrupt it.
+	var song := COMPANION.duplicate() as AudioStreamWAV
+	song.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	song.loop_begin = 0
+	song.loop_end = int(song.get_length() * song.mix_rate)
+	_companion_player = AudioStreamPlayer.new()
+	_companion_player.name = "LampLullaby"
+	_companion_player.stream = song
+	_companion_player.volume_db = -60.0
+	add_child(_companion_player)
 
 	for index in VOICE_COUNT:
 		var voice := AudioStreamPlayer.new()
@@ -113,7 +130,7 @@ func update_footsteps(world_position: Vector2, delta: float) -> void:
 	var distance := world_position.distance_to(_last_step_position)
 	_last_step_position = world_position
 	_step_clock += delta
-	if distance > 32.0 or delta > 0.3 or _muted:
+	if distance > 32.0 or delta > 0.3 or _muted or _companion_active:
 		_step_distance = STEP_SPACING * 0.5
 		return
 	if distance < 0.01:
@@ -135,6 +152,8 @@ func set_muted(value: bool) -> void:
 	_muted = value
 	if is_instance_valid(_ambience_player):
 		_ambience_player.stream_paused = value
+	if is_instance_valid(_companion_player):
+		_companion_player.stream_paused = value
 	if value:
 		for voice in _voices:
 			voice.stop()
@@ -144,3 +163,28 @@ func set_muted(value: bool) -> void:
 
 func is_muted() -> bool:
 	return _muted
+
+
+func set_companion(active: bool) -> void:
+	if active == _companion_active:
+		return
+	_companion_active = active
+	_has_step_position = false
+	_step_distance = STEP_SPACING * 0.5
+	if active and is_instance_valid(_footstep_player):
+		_footstep_player.stop()
+	if not is_instance_valid(_companion_player):
+		return
+	# Killing the prior tween also cancels its pending stop when re-entering.
+	if _companion_tween != null and _companion_tween.is_valid():
+		_companion_tween.kill()
+	_companion_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	if active:
+		if not _companion_player.playing:
+			_companion_player.volume_db = -60.0
+			_companion_player.play()
+		_companion_player.stream_paused = _muted
+		_companion_tween.tween_property(_companion_player, "volume_db", COMPANION_VOLUME_DB, COMPANION_FADE_IN)
+	else:
+		_companion_tween.tween_property(_companion_player, "volume_db", -60.0, COMPANION_FADE_OUT)
+		_companion_tween.tween_callback(_companion_player.stop)

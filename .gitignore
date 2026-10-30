@@ -8,4 +8,5 @@ exports/
 export_credentials.cfg
 .DS_Store
 Thumbs.db
+__pycache__/
 # .gd.uid 与原始素材属于项目，应提交。
