@@ -1,6 +1,7 @@
 extends SceneTree
 ## 先导入项目，再运行：Godot --headless --path . --script res://tests/smoke_test.gd
 ## 覆盖种光规则、存档边界，以及真实场景的输入、暂停和物理碰撞。
+## M0：数值改为 A1 定稿（月苔 90s / 灯铃 120s / 收获 1 / 修灯 12+8·24+16·36+24 / 12 格苗床）。
 
 const Garden = preload("res://scripts/game/garden_state.gd")
 var _failures: int = 0
@@ -19,7 +20,7 @@ func _run() -> void:
 	await _check_main_scene()
 	paused = false
 	if _failures == 0:
-		print("SMOKE PASS: 种光规则、资源经营、修灯、严格存档恢复、场景输入、暂停与碰撞均通过。")
+		print("SMOKE PASS: 种光规则、资源经营、修灯、宽松存档恢复、场景输入、暂停与碰撞均通过。")
 	else:
 		printerr("SMOKE FAIL: %d 项检查失败。" % _failures)
 	quit(0 if _failures == 0 else 1)
@@ -30,8 +31,10 @@ func _check_state_machine() -> void:
 	garden.harvest_collected.connect(func(kind: String, amount: int) -> void: _harvest_events.append({"kind": kind, "amount": amount}))
 	garden.lantern_restored.connect(func(index: int) -> void: _restored_events.append(index))
 	_check(garden.get_restored_count() == 1, "开局应修好一盏灯。")
-	_check(garden.resources == {"dew": 2, "spores": 0}, "开局资源应为 2 露滴与 0 灯孢。")
-	_check(garden.growth_condition(Vector2i(34, 23)) and garden.growth_condition(Vector2i(28, 20)), "预种植物应处于适宜光照。")
+	_check(garden.resources == {"dew": 2, "spores": 0, "nightdew": 0}, "开局资源应为 2 露滴、0 灯孢、0 夜露。")
+	_check(garden.plots.size() == 12, "灯圃应有 12 格苗床。")
+	_check(garden.calendar.get("season") == "spring" and int(garden.calendar.get("day")) == 1, "开局应为春·第 1 天。")
+	_check(garden.growth_condition(Vector2i(14, 26)) and garden.growth_condition(Vector2i(26, 18)), "预种植物应处于适宜光照。")
 	for cell: Vector2i in garden.plots:
 		for lamp: Dictionary in garden.lanterns:
 			_check(_center(cell).distance_to(lamp["position"]) > Garden.LANTERN_BASE_RADIUS, "苗床不应与灯脚交互范围重叠。")
@@ -52,65 +55,66 @@ func _check_state_machine() -> void:
 	garden.advance(-1.0)
 	_check(garden.snapshot() == before, "无效操作不应修改经营状态。")
 	_check(garden.get_plot_info(lit)["progress"] == -1.0, "空苗床应没有生长进度。")
-	# 月苔在暖光中等待，熄灯后才生长。
+	# 月苔在暖光中等待，熄灯后才生长（90 秒成熟，45 秒到 50%）。
 	garden.plant_or_harvest(lit)
-	garden.advance(9.0)
+	garden.advance(45.0)
 	_check(is_zero_approx(garden.plots[lit]["growth"]), "月苔不应在暖光中生长。")
 	var dew_before := int(garden.resources["dew"])
 	garden.nourish(lit)
 	_check(garden.resources["dew"] == dew_before, "光照不合适的露养不应扣资源。")
 	garden.interact_lantern(0)
-	garden.advance(9.0)
-	_check(is_equal_approx(garden.plots[lit]["growth"], 0.5), "熄灯后月苔应在 9 秒长到 50%。")
+	garden.advance(45.0)
+	_check(is_equal_approx(garden.plots[lit]["growth"], 0.5), "熄灯后月苔应在 45 秒长到 50%。")
 	garden.interact_lantern(0)
-	garden.advance(9.0)
+	garden.advance(45.0)
 	_check(is_equal_approx(garden.plots[lit]["growth"], 0.5), "重新点灯应暂停月苔生长。")
 	garden.clear_crop(lit)
 	_check(garden.plots[lit] == {"crop": "", "growth": 0.0}, "移除未熟植物应归还可重种空格。")
-	# 灯铃只在暖光中生长，成熟收获只支付一次。
+	# 灯铃只在暖光中生长，成熟收获只支付一次（120 秒成熟，60 秒到 50%）。
 	garden.select_crop("glow_bell")
 	garden.plant_or_harvest(dark)
-	garden.advance(24.0)
+	garden.advance(120.0)
 	_check(is_zero_approx(garden.plots[dark]["growth"]), "灯铃不应在阴影中生长。")
 	garden.plant_or_harvest(lit)
-	garden.advance(12.0)
-	_check(is_equal_approx(garden.plots[lit]["growth"], 0.5), "灯铃应在 12 秒长到 50%。")
+	garden.advance(60.0)
+	_check(is_equal_approx(garden.plots[lit]["growth"], 0.5), "灯铃应在 60 秒长到 50%。")
 	garden.nourish(lit)
 	_check(is_equal_approx(garden.plots[lit]["growth"], 0.85) and garden.resources["dew"] == dew_before - 1, "露养应花 1 露滴并增加 35% 进度。")
-	garden.advance(24.0)
+	garden.advance(120.0)
 	_check(garden.plots[lit]["growth"] == 1.0, "生长进度应封顶为 1。")
 	dew_before = int(garden.resources["dew"])
 	garden.nourish(lit)
 	garden.clear_crop(lit)
 	_check(garden.resources["dew"] == dew_before and garden.plots[lit]["crop"] == "glow_bell", "成熟植物不应被露养扣费或被 R 误删。")
 	garden.plant_or_harvest(lit)
-	_check(garden.resources["spores"] == 3 and garden.total_harvests == 1, "收获灯铃应得到 3 灯孢并累计一次收获。")
-	_check(_harvest_events.size() == 1 and _harvest_events[0] == {"kind": "glow_bell", "amount": 3}, "收获信号应包含作物与资源产量。")
+	_check(garden.resources["spores"] == 1 and garden.total_harvests == 1, "收获灯铃应得到 1 灯孢并累计一次收获。")
+	_check(_harvest_events.size() == 1 and _harvest_events[0] == {"kind": "glow_bell", "amount": 1}, "收获信号应包含作物与资源产量。")
 	garden.plant_or_harvest(lit)
-	_check(garden.resources["spores"] == 3 and garden.total_harvests == 1, "成熟作物不能被重复领取。")
+	_check(garden.resources["spores"] == 1 and garden.total_harvests == 1, "成熟作物不能被重复领取。")
 	garden.clear_crop(dark)
 	garden.select_crop("moon_moss")
 	garden.plant_or_harvest(dark)
-	garden.advance(18.0)
+	garden.advance(90.0)
 	garden.plant_or_harvest(dark)
-	_check(garden.resources["dew"] == dew_before + 3, "阴影中的月苔应产出 3 露滴。")
+	_check(garden.resources["dew"] == dew_before + 1, "阴影中的月苔应产出 1 露滴。")
 	_check(_harvest_events.size() == 2 and _harvest_events[1]["kind"] == "moon_moss", "两种植物应发出不同收获类型。")
-	# 材料不足不能扣费，两盏坏灯均按同一成本修复。
+	# 材料不足不能扣费；修复成本逐盏递增。
 	before = garden.snapshot()
 	garden.interact_lantern(1)
 	_check(garden.snapshot() == before, "材料不足不能修复或扣资源。")
-	garden.resources = {"dew": 8, "spores": 12}
+	_check(int(garden.get_restore_cost(0)["spores"]) == 12 and int(garden.get_restore_cost(1)["spores"]) == 24 and int(garden.get_restore_cost(2)["spores"]) == 36, "修复成本应按盏递增 12/24/36 灯孢。")
+	garden.resources = {"dew": 40, "spores": 60, "nightdew": 0}
 	garden.interact_lantern(1)
-	_check(garden.get_restored_count() == 2 and garden.resources == {"dew": 4, "spores": 6}, "修复第二灯应花 4 露滴与 6 灯孢。")
+	_check(garden.get_restored_count() == 2 and garden.resources == {"dew": 24, "spores": 36, "nightdew": 0}, "修复第二灯应花 16 露滴与 24 灯孢。")
 	_check(garden.lanterns[1]["lit"], "修复完成的灯应立即点亮。")
 	var victory := garden.interact_lantern(2)
-	_check(garden.get_restored_count() == 3 and garden.resources == {"dew": 0, "spores": 0}, "第三灯应采用相同成本。")
+	_check(garden.get_restored_count() == 3 and garden.resources == {"dew": 0, "spores": 0, "nightdew": 0}, "第三灯应花 24 露滴与 36 灯孢。")
 	_check(victory.contains("重新相连") and _restored_events == [1, 2], "全部修复应提示灯路相连，并只发一次修复信号。")
 	garden.interact_lantern(2)
 	_check(not garden.lanterns[2]["lit"] and garden.get_restored_count() == 3, "熄灯不能撤销修复进度。")
 	garden.interact_lantern(2)
 	garden.nourish(lit)
-	_check(garden.resources == {"dew": 0, "spores": 0}, "开关灯不耗资源，无露滴不能透支露养。")
+	_check(garden.resources == {"dew": 0, "spores": 0, "nightdew": 0}, "开关灯不耗资源，无露滴不能透支露养。")
 	garden.reset()
 	_check(garden.total_harvests == 0 and garden.get_restored_count() == 1, "重置应恢复开局状态。")
 
@@ -124,52 +128,50 @@ func _check_snapshot_validation() -> void:
 	var parsed: Variant = JSON.parse_string(JSON.stringify(valid, "", true, true))
 	var restored := Garden.new()
 	_check(parsed is Dictionary and restored.restore(parsed), "快照应能经过 JSON 编解码后恢复。")
-	_check(restored.snapshot() == valid, "JSON 恢复应完整保留资源、作物、灯和选择。")
+	_check(restored.snapshot() == valid, "JSON 恢复应完整保留资源、作物、灯与日历。")
 	_check(restored.lanterns[0]["position"] == Garden.LANTERN_POSITIONS[0], "恢复应重建固定灯的位置。")
 	var exported := garden.snapshot()
 	exported["resources"]["dew"] = 999
-	exported["plots"][0]["crop"] = "glow_bell"
+	exported["crops"] = []
 	_check(garden.snapshot() == valid, "外部修改快照不应影响正在游玩的状态。")
 	var bad := valid.duplicate(true)
 	bad["version"] = 99
 	_reject_snapshot(garden, bad, "未知版本")
 	bad = valid.duplicate(true)
-	bad.erase("plots")
+	bad.erase("crops")
 	_reject_snapshot(garden, bad, "缺失字段")
 	bad = valid.duplicate(true)
-	bad["unexpected"] = true
-	_reject_snapshot(garden, bad, "额外字段")
+	bad["calendar"]["season"] = "monsoon"
+	_reject_snapshot(garden, bad, "未知季节")
 	bad = valid.duplicate(true)
-	bad["selected_crop"] = "turnip"
-	_reject_snapshot(garden, bad, "未知选择")
+	bad["calendar"]["day"] = 9
+	_reject_snapshot(garden, bad, "天数越界")
 	for value: Variant in [-1, 0.5, Garden.MAX_RESOURCE + 1, INF, "2", true]:
 		bad = valid.duplicate(true)
 		bad["resources"]["dew"] = value
 		_reject_snapshot(garden, bad, "非法资源值 %s" % str(value))
 	bad = valid.duplicate(true)
-	bad["total_harvests"] = -1
+	bad["resources"].erase("nightdew")
+	_reject_snapshot(garden, bad, "缺少夜露")
+	bad = valid.duplicate(true)
+	bad["summary"]["total_harvests"] = -1
 	_reject_snapshot(garden, bad, "负收获计数")
+	bad = valid.duplicate(true)
+	bad["crops"] = [{"x": 20, "y": 20, "crop": "moon_moss", "growth": 0.5}]
+	_reject_snapshot(garden, bad, "苗床外地格")
+	bad = valid.duplicate(true)
+	bad["crops"] = [{"x": 14, "y": 26, "crop": "unknown", "growth": 0.5}]
+	_reject_snapshot(garden, bad, "未知作物")
 	for value: Variant in [-0.1, 1.1, NAN, INF, "0.5"]:
 		bad = valid.duplicate(true)
-		bad["plots"][0]["growth"] = value
+		bad["crops"] = [{"x": 14, "y": 26, "crop": "moon_moss", "growth": value}]
 		_reject_snapshot(garden, bad, "非法生长值 %s" % str(value))
 	bad = valid.duplicate(true)
-	bad["plots"][0]["growth"] = 0.5
-	bad["plots"][0]["crop"] = ""
-	_reject_snapshot(garden, bad, "空格非零生长")
-	bad = valid.duplicate(true)
-	bad["plots"][0]["crop"] = "unknown"
-	_reject_snapshot(garden, bad, "未知作物")
-	bad = valid.duplicate(true)
-	bad["plots"][0] = bad["plots"][1].duplicate(true)
+	bad["crops"] = [
+		{"x": 14, "y": 26, "crop": "moon_moss", "growth": 0.5},
+		{"x": 14, "y": 26, "crop": "glow_bell", "growth": 0.5},
+	]
 	_reject_snapshot(garden, bad, "重复地格")
-	bad = valid.duplicate(true)
-	bad["plots"].pop_back()
-	_reject_snapshot(garden, bad, "不完整地格集合")
-	bad = valid.duplicate(true)
-	bad["plots"][0]["x"] = 0
-	bad["plots"][0]["y"] = 0
-	_reject_snapshot(garden, bad, "苗床外地格")
 	bad = valid.duplicate(true)
 	bad["lanterns"][1]["lit"] = true
 	_reject_snapshot(garden, bad, "损坏却点亮的灯")
@@ -180,8 +182,20 @@ func _check_snapshot_validation() -> void:
 	bad["lanterns"][1]["restored"] = 1
 	_reject_snapshot(garden, bad, "非布尔灯状态")
 	bad = valid.duplicate(true)
+	bad["lanterns"][1]["charge"] = 1.5
+	_reject_snapshot(garden, bad, "灯火浓度越界")
+	bad = valid.duplicate(true)
 	bad["lanterns"].pop_back()
 	_reject_snapshot(garden, bad, "缺失灯")
+	bad = valid.duplicate(true)
+	bad["lanterns"][2]["id"] = "not_a_lamp"
+	_reject_snapshot(garden, bad, "未知灯 id")
+	# v2 起允许未知字段：旧字段与新字段混在一起也必须读得进去。
+	var extra := valid.duplicate(true)
+	extra["future_field"] = {"anything": true}
+	var extra_garden := Garden.new()
+	_check(extra_garden.restore(extra), "v2 应忽略未知字段。")
+	_check(extra_garden.snapshot() == valid, "忽略未知字段后状态应与原档一致。")
 
 
 func _reject_snapshot(garden: GardenState, data: Dictionary, reason: String) -> void:
@@ -303,7 +317,7 @@ func _check_scene_gardening(garden: GardenState, player: FarmPlayer, farm: FarmW
 	await create_timer(0.45, false, false, true).timeout
 	await process_frame
 	await _press_action("interact")
-	_check(garden.total_harvests == 1 and garden.resources["spores"] == 3, "恢复后成熟植物应可通过主场景输入收获。")
+	_check(garden.total_harvests == 1 and garden.resources["spores"] == 1, "恢复后成熟植物应可通过主场景输入收获。")
 	_check(garden.plots[cell]["crop"] == "", "收获后前方苗床应重新为空。")
 
 

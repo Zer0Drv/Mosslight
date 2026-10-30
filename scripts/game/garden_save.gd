@@ -2,7 +2,9 @@ class_name GardenSave
 extends RefCounted
 ## 先写临时文件，保留上一份完整备份，再替换正式文件。
 
-const DEFAULT_PATH := "user://mosslight_garden_v1.json"
+## M0（B2）：正式文件去掉版本后缀；读取时兼容旧文件名 mosslight_garden_v1.json。
+const DEFAULT_PATH := "user://mosslight_garden.json"
+const LEGACY_PATH := "user://mosslight_garden_v1.json"
 var path: String
 
 
@@ -11,10 +13,17 @@ func _init(save_path: String = DEFAULT_PATH) -> void:
 
 
 func load_state(garden: GardenState) -> Dictionary:
-	var result := {"loaded": false, "error": "", "muted": false, "recovered": false}
-	if not FileAccess.file_exists(path) and not FileAccess.file_exists(path + ".bak"):
+	var result := {"loaded": false, "error": "", "muted": false, "recovered": false, "note": ""}
+	var found := false
+	for existing: String in _candidates():
+		if FileAccess.file_exists(existing):
+			found = true
+			break
+	if not found:
 		return result
-	for candidate: String in [path, path + ".bak"]:
+	for candidate: String in _candidates():
+		if not FileAccess.file_exists(candidate):
+			continue
 		var file := FileAccess.open(candidate, FileAccess.READ)
 		if file == null or file.get_length() > 1048576:
 			continue
@@ -31,9 +40,16 @@ func load_state(garden: GardenState) -> Dictionary:
 		result.loaded = true
 		result.muted = document.get("muted", false)
 		result.recovered = candidate != path
+		result.note = garden.migration_note
 		return result
 	result.error = "Invalid garden save and backup"
 	return result
+
+
+func _candidates() -> Array[String]:
+	if path == DEFAULT_PATH:
+		return [path, path + ".bak", LEGACY_PATH, LEGACY_PATH + ".bak"]
+	return [path, path + ".bak"]
 
 
 func save_state(garden: GardenState, muted: bool) -> Error:

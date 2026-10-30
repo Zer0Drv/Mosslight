@@ -1,7 +1,9 @@
 extends SceneTree
 ## Godot --headless --path . --script res://tests/save_test.gd
 ## Only this test's unique files under the current project's logs directory are touched.
+## M0：改用动态寻找苗床（不再硬编码旧布局坐标），并断言迁移备注与 v2 往返。
 
+const Garden = preload("res://scripts/game/garden_state.gd")
 var _failures: int = 0
 var _path: String = ""
 var _logs_directory: String = ""
@@ -28,10 +30,10 @@ func _run() -> void:
 	var save := GardenSave.new(_path)
 	_check_missing_save(save)
 	var source := GardenState.new()
+	var lit := _first_cell(source, true)
 	source.select_crop("glow_bell")
-	source.advance(120.0)
-	source.plant_or_harvest(Vector2i(34, 23))
-	source.interact_lantern(0)
+	source.advance(600.0)
+	source.plant_or_harvest(lit)
 	var first_snapshot := source.snapshot().duplicate(true)
 	_check(save.save_state(source, true) == OK, "First file save must succeed.")
 	_check(FileAccess.file_exists(_path), "First save must create the primary JSON file.")
@@ -39,8 +41,9 @@ func _run() -> void:
 	_check_loaded(save, first_snapshot, true, false, "First round trip")
 
 	source.interact_lantern(0)
-	source.plant_or_harvest(Vector2i(28, 20))
+	var dark := _first_cell(source, false)
 	source.select_crop("moon_moss")
+	source.plant_or_harvest(dark)
 	var second_snapshot := source.snapshot().duplicate(true)
 	_check(first_snapshot != second_snapshot, "Overwrite fixture must contain changed gameplay state.")
 	_check(save.save_state(source, false) == OK, "Replacing an existing save must succeed on Windows.")
@@ -65,6 +68,13 @@ func _run() -> void:
 	else:
 		printerr("SAVE FAIL: %d checks failed." % _failures)
 	quit(0 if _failures == 0 else 1)
+
+
+func _first_cell(garden: GardenState, lit: bool) -> Vector2i:
+	for cell: Vector2i in garden.plots:
+		if garden.is_lit(cell) == lit:
+			return cell
+	return Vector2i(-1, -1)
 
 
 func _check_missing_save(save: GardenSave) -> void:
@@ -99,7 +109,7 @@ func _check_rejected_documents(save: GardenSave, valid_snapshot: Dictionary) -> 
 	_reject_pair(save, wrong_version_json, wrong_version_json, "Unknown state version")
 	var missing_fields := JSON.stringify({"garden": {"version": 1}, "muted": false})
 	_reject_pair(save, missing_fields, missing_fields, "Incomplete state schema")
-	# Fail late in GardenState.restore, after otherwise valid resources/plots.
+	# Fail late in GardenState.restore, after otherwise valid resources/crops/lanterns.
 	# An implementation that mutates progressively would leak these changes.
 	var invalid_lantern := valid_snapshot.duplicate(true)
 	invalid_lantern["resources"]["dew"] = 77

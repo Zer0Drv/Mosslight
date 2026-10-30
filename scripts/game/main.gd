@@ -44,7 +44,12 @@ func _ready() -> void:
 	if not String(load_result.error).is_empty():
 		hud.show_message("原存档读取失败。本次灯圃暂不保存，以保留原文件。", 10.0)
 	elif bool(load_result.loaded):
-		hud.show_message("苔灯还亮着。上次照料的灯圃，正等你回来。", 6.0)
+		# M0：v1 存档迁移过来时，先告诉玩家旧苗床的折算结果。
+		var migration_note := String(load_result.get("note", ""))
+		if not migration_note.is_empty():
+			hud.show_message(migration_note, 9.0)
+		else:
+			hud.show_message("苔灯还亮着。上次照料的灯圃，正等你回来。", 6.0)
 	else:
 		hud.show_message("暗处种月苔，暖光里种灯铃。收集露滴与灯孢，修复两盏旧灯。", 9.0)
 

@@ -27,7 +27,7 @@ if ($Mode -eq 'Editor') {
     if ($LASTEXITCODE -ne 0 -or (Select-String -LiteralPath $importLog -Pattern 'SCRIPT ERROR:|ERROR:' -Quiet)) {
         throw "Godot import failed. See $importLog."
     }
-    foreach ($testName in @('smoke_test', 'save_test')) {
+    foreach ($testName in @('smoke_test', 'save_test', 'migration_test')) {
         $testLog = Join-Path $logDirectory ($testName + '.log')
         & $consoleExecutable --headless --path $projectDirectory --script ('res://tests/' + $testName + '.gd') --log-file $testLog
         if ($LASTEXITCODE -ne 0 -or (Select-String -LiteralPath $testLog -Pattern 'SCRIPT ERROR:|ERROR:' -Quiet)) {
