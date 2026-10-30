@@ -23,7 +23,7 @@
 
 ## 当前状态
 
-当前整合版本把切片 A MVP、M0 存档工作与首批运行美术/声音合到一起，目标主线为 `main`。合并验收在 `codex/merge-mvp-save-assets` 进行，结果见[实现与验证记录](mvp-validation.md)。
+当前整合版本把切片 A MVP、M0 存档工作与首批运行美术/声音合到一起，整合结果合入 `main`。合并验收在 `codex/merge-mvp-save-assets` 完成，结果见[实现与验证记录](mvp-validation.md)。
 
 | 范围 | 已有的事实 | 尚未完成 |
 | --- | --- | --- |
