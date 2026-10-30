@@ -13,6 +13,9 @@ var _save_dirty := false
 var _save_clock := 0.0
 var _ui_clock := 0.0
 var _show_light := false
+var _journal_open := false
+var _previous_phase := "day"
+var _previous_day := 1
 
 
 func _ready() -> void:
@@ -38,21 +41,48 @@ func _ready() -> void:
 	hud.seed_selected.connect(_select_seed)
 	hud.resume_requested.connect(_toggle_pause)
 	hud.mute_requested.connect(_toggle_mute)
+	hud.journal_requested.connect(_toggle_journal)
+	hud.companion_requested.connect(_toggle_companion)
+	hud.sleep_requested.connect(_sleep)
+	hud.companion_touched.connect(_touch_companion)
 	hud.set_muted(music.is_muted())
+	_previous_phase = garden.calendar.phase
+	_previous_day = int(garden.calendar.day)
+	if _save_enabled and bool(load_result.loaded):
+		garden.grow_offline(int(Time.get_unix_time_from_system()))
+		_save_dirty = true
 	_refresh_hud()
 	get_tree().auto_accept_quit = false
 	if not String(load_result.error).is_empty():
-		hud.show_message("原存档读取失败。本次灯圃暂不保存，以保留原文件。", 10.0)
+		hud.show_message(String(load_result.error), 10.0)
+	elif load_result.get("migrated", false):
+		hud.show_message("旧本子抄成新的了。" + garden.migration_note, 12.0)
 	elif bool(load_result.loaded):
 		hud.show_message("苔灯还亮着。上次照料的灯圃，正等你回来。", 6.0)
 	else:
-		hud.show_message("暗处种月苔，暖光里种灯铃。收集露滴与灯孢，修复两盏旧灯。", 9.0)
+		if not garden.tutorial_seen.has("garden_intro"):
+			garden.tutorial_seen.append("garden_intro")
+			_save_dirty = true
+			hud.show_message("WASD 移动，E 种收。Tab 看明暗：暗处月苔，光里灯铃。J 查看今日与操作速查。", 12.0)
+	_save_progress()
 
 
 func _process(delta: float) -> void:
 	if get_tree().paused or garden == null:
 		return
 	garden.advance(delta)
+	if garden.companion:
+		var drift := Time.get_ticks_msec() / 1000.0
+		$Player/Camera2D.offset = Vector2(sin(drift * 0.19) * 2.0, cos(drift * 0.16) * 1.0)
+	if garden.companion and Input.get_vector("move_left", "move_right", "move_up", "move_down") != Vector2.ZERO:
+		_leave_companion()
+	if garden.calendar.phase != _previous_phase:
+		_previous_phase = garden.calendar.phase
+		if _previous_phase == "dusk":
+			hud.show_message("天黑了。J 打开今日手账，可以睡觉；也可以到亮灯旁坐坐。", 9.0)
+	if int(garden.calendar.day) != _previous_day:
+		_previous_day = int(garden.calendar.day)
+		hud.show_message("新的一天。苗床里的植物还在，灯也还亮着。", 6.0)
 	farm.set_interaction_target(player.get_interaction_position())
 	_ui_clock += delta
 	_save_clock += delta
@@ -67,11 +97,30 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.echo:
 		return
-	if event.is_action_pressed("pause"):
+	if garden.companion:
+		if event.is_action_pressed("pause") or event.is_action_pressed("companion"):
+			_leave_companion()
+		elif event.is_action_pressed("mute"):
+			_toggle_mute()
+		elif event.is_action_pressed("toggle_fullscreen"):
+			_toggle_fullscreen()
+		elif event.is_action_pressed("move_left") or event.is_action_pressed("move_right") or event.is_action_pressed("move_up") or event.is_action_pressed("move_down"):
+			_leave_companion()
+		get_viewport().set_input_as_handled()
+		return
+	if _journal_open:
+		if event.is_action_pressed("journal") or event.is_action_pressed("pause"):
+			_toggle_journal()
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("journal") and not get_tree().paused:
+		_toggle_journal()
+	elif event.is_action_pressed("companion"):
+		_toggle_companion()
+	elif event.is_action_pressed("pause"):
 		_toggle_pause()
 	elif event.is_action_pressed("toggle_fullscreen"):
-		var mode := DisplayServer.window_get_mode()
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if mode == DisplayServer.WINDOW_MODE_FULLSCREEN else DisplayServer.WINDOW_MODE_FULLSCREEN)
+		_toggle_fullscreen()
 	elif event.is_action_pressed("mute"):
 		_toggle_mute()
 	elif get_tree().paused:
@@ -111,7 +160,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _select_seed(kind: String) -> void:
-	if get_tree().paused:
+	if get_tree().paused or garden.companion:
 		return
 	garden.select_crop(kind)
 	music.play_cue("toggle")
@@ -123,6 +172,71 @@ func _toggle_pause() -> void:
 	get_tree().paused = not get_tree().paused
 	hud.set_paused(get_tree().paused)
 	if get_tree().paused:
+		_save_progress()
+
+
+func _toggle_fullscreen() -> void:
+	var mode := DisplayServer.window_get_mode()
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if mode == DisplayServer.WINDOW_MODE_FULLSCREEN else DisplayServer.WINDOW_MODE_FULLSCREEN)
+
+
+func _toggle_journal() -> void:
+	if garden.companion:
+		return
+	_journal_open = not _journal_open
+	get_tree().paused = _journal_open
+	hud.set_journal(_journal_open)
+	_refresh_hud()
+	if _journal_open:
+		_save_progress()
+
+
+func _toggle_companion() -> void:
+	if garden.companion:
+		_leave_companion()
+		return
+	if farm.nearest_lit_lantern(player.global_position) < 0:
+		hud.show_message("到一盏亮着的固定苔灯旁，按 F 坐坐。", 5.0)
+		return
+	get_tree().paused = false
+	_journal_open = false
+	hud.set_paused(false)
+	hud.set_journal(false)
+	garden.companion = true
+	player.sitting = true
+	farm.companion = true
+	farm.companion_anchor = player.global_position
+	hud.set_companion(true)
+	music.set_companion(true)
+	if not garden.tutorial_seen.has("companion_intro"):
+		garden.tutorial_seen.append("companion_intro")
+	_save_dirty = true
+	_save_progress()
+
+
+func _leave_companion() -> void:
+	garden.companion = false
+	player.sitting = false
+	farm.companion = false
+	$Player/Camera2D.offset = Vector2.ZERO
+	hud.set_companion(false)
+	music.set_companion(false)
+	hud.show_message("歇好了。灯圃里的植物还在慢慢长。", 5.0)
+	_refresh_hud()
+
+
+func _touch_companion(index: int) -> void:
+	if not garden.companion or get_tree().paused or index < 0 or index >= 6:
+		return
+	var lines := ["灯芯轻轻一响，暖光晃了晃。", "猫蜷起尾巴，轻轻应了一声。", "铃声落在苔叶上，慢慢散了。", "萤火绕过指尖，又飞回林间。", "池水里的月亮，轻轻碎了一下。", "翻到空白的一页。今天可以慢一点。"]
+	hud.show_companion_message(lines[index])
+	farm.touch_companion(index)
+	music.play_cue("toggle" if index != 2 else "harvest")
+
+
+func _sleep() -> void:
+	if garden.sleep_to_next_day():
+		_toggle_journal()
 		_save_progress()
 
 
@@ -169,6 +283,9 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		_save_progress()
 		get_tree().quit()
+	elif what == NOTIFICATION_APPLICATION_FOCUS_OUT and is_instance_valid(hud) and garden != null:
+		if not garden.companion and not get_tree().paused and DisplayServer.get_name() != "headless":
+			_toggle_pause()
 
 
 func _exit_tree() -> void:

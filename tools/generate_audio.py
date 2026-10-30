@@ -159,10 +159,25 @@ def generate_cues() -> None:
         save_wave(f"{name}.wav", [samples])
 
 
+def generate_companion() -> None:
+    """Sparse 16-second lamp lullaby, on its own player and loop."""
+    duration = 16.0
+    score = [(0.0, 261.63), (2.0, 329.63), (4.0, 392.0), (6.0, 329.63),
+             (8.0, 293.66), (10.0, 261.63), (12.0, 196.0)]
+    samples = []
+    for index in range(round(duration * SAMPLE_RATE)):
+        t = index / SAMPLE_RATE
+        value = sum(0.13 * bell(t - start, frequency, 3.6, 0.12)
+                    for start, frequency in score)
+        samples.append(value)
+    save_wave("under_lamp.wav", [samples])
+
+
 def main() -> None:
     OUTPUT.mkdir(parents=True, exist_ok=True)
     generate_ambience()
     generate_cues()
+    generate_companion()
 
 
 if __name__ == "__main__":

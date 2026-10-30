@@ -18,6 +18,10 @@ var _light_overlay := false
 var _animation_time := 0.0
 var _animation_accumulator := 0.0
 var _air: ForestAir
+var companion := false
+var companion_anchor := Vector2.ZERO
+var _touch_time := 0.0
+var _touch_index := -1
 
 
 class ForestAir extends Node2D:
@@ -65,6 +69,7 @@ func bind_garden(value: GardenState) -> void:
 
 func _process(delta: float) -> void:
 	_animation_time += delta
+	_touch_time = maxf(0.0, _touch_time - delta)
 	_animation_accumulator += delta
 	if _animation_accumulator >= ANIMATION_STEP:
 		_animation_accumulator = fmod(_animation_accumulator, ANIMATION_STEP)
@@ -79,6 +84,21 @@ func get_world_rect() -> Rect2:
 
 func get_spawn_position() -> Vector2:
 	return SPAWN_POSITION
+
+
+func nearest_lit_lantern(point: Vector2) -> int:
+	if garden == null:
+		return -1
+	for index in range(garden.lanterns.size()):
+		var lamp: Dictionary = garden.lanterns[index]
+		if lamp.restored and lamp.lit and point.distance_to(lamp.position) <= GardenState.LIGHT_RADIUS:
+			return index
+	return -1
+
+
+func touch_companion(index: int) -> void:
+	_touch_index = index
+	_touch_time = 2.5
 
 
 func set_interaction_target(world_position: Vector2) -> void:
@@ -167,7 +187,7 @@ func _draw() -> void:
 		return
 	_draw_beds()
 	_draw_ambient_light()
-	if _light_overlay:
+	if _light_overlay and not companion:
 		_draw_light_ranges()
 	for cell: Vector2i in garden.plots:
 		var plot: Dictionary = garden.plots[cell]
@@ -183,7 +203,10 @@ func _draw() -> void:
 			_draw_glow_bell(center, growth, thriving)
 	for index in range(garden.lanterns.size()):
 		_draw_lantern(garden.lanterns[index], index)
-	_draw_target()
+	if companion:
+		_draw_companion()
+	else:
+		_draw_target()
 
 
 func _draw_beds() -> void:
@@ -217,7 +240,7 @@ func _draw_ambient_light() -> void:
 		var point: Vector2 = lantern["position"]
 		for radius in range(78, 4, -6):
 			_pixel_ellipse(self, Rect2(point - Vector2(radius, radius), Vector2(radius * 2, radius * 2)), Color(0.96, 0.71, 0.37, 0.015), 4)
-		var flicker := 0.075 + sin(_animation_time * 2.1 + point.x) * 0.012
+		var flicker := 0.075 + sin(_animation_time * (0.75 if companion else 2.1) + point.x) * (0.025 if companion else 0.012)
 		_pixel_ellipse(self, Rect2(point + Vector2(-15, -41), Vector2(30, 30)), Color(1.0, 0.8, 0.47, flicker), 2)
 	# 窗光与池光仅作装饰，不影响种植。
 	for radius in range(40, 3, -5):
@@ -316,6 +339,29 @@ func _draw_target() -> void:
 		_draw_brackets(Rect2(point + Vector2(-10, -39), Vector2(20, 45)), color)
 	elif garden.plots.has(_target_cell):
 		_draw_brackets(Rect2(Vector2(_target_cell * CELL_SIZE), Vector2(16, 16)), color)
+
+
+func _draw_companion() -> void:
+	# 猫与旧书只是陪伴画面，不创建资源、好感或可领取物。
+	var cat := companion_anchor + Vector2(22, -2)
+	var twitch := 1.0 if _touch_time > 0.0 and _touch_index == 1 else 0.0
+	_pixel_ellipse(self, Rect2(cat + Vector2(-6, -4), Vector2(16, 7)), Color("b49683"), 1)
+	draw_rect(Rect2(cat + Vector2(-5, -7), Vector2(8, 5)), Color("c8b29a"))
+	draw_rect(Rect2(cat + Vector2(-5, -9), Vector2(2, 3)), Color("c8b29a"))
+	draw_rect(Rect2(cat + Vector2(1, -9), Vector2(2, 3)), Color("c8b29a"))
+	draw_rect(Rect2(cat + Vector2(-3, -5), Vector2(1, 1)), Color("3a4145"))
+	draw_rect(Rect2(cat + Vector2(0, -5), Vector2(1, 1)), Color("3a4145"))
+	draw_rect(Rect2(cat + Vector2(8, -3 - twitch), Vector2(4, 2)), Color("c8b29a"))
+	var book := companion_anchor + Vector2(-20, 1)
+	draw_rect(Rect2(book, Vector2(10, 5)), Color("726b60"))
+	draw_rect(Rect2(book + Vector2(1, -1), Vector2(8, 4)), Color("d9d3b4"))
+	draw_rect(Rect2(book + Vector2(4, -1), Vector2(1, 4)), Color("9d9983"))
+	if _touch_time > 0.0:
+		var radius := (2.5 - _touch_time) * 10.0
+		for i in range(8):
+			var angle := i * TAU / 8.0 + _animation_time * 0.15
+			var point := companion_anchor + Vector2(cos(angle), sin(angle)) * radius + Vector2(0, -15)
+			draw_rect(Rect2(point.round(), Vector2.ONE), Color(0.9, 0.87, 0.65, _touch_time / 2.5))
 
 
 func _draw_brackets(rectangle: Rect2, color: Color) -> void:

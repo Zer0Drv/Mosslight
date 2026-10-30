@@ -7,9 +7,15 @@ extends CharacterBody2D
 var facing: Vector2 = Vector2.UP
 var _walk_time := 0.0
 var _celebration := 0.0
+var sitting := false
 
 
 func _physics_process(delta: float) -> void:
+	if sitting:
+		velocity = Vector2.ZERO
+		_walk_time = 0.0
+		queue_redraw()
+		return
 	var direction := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = direction * move_speed
 	if direction != Vector2.ZERO:
@@ -34,6 +40,9 @@ func celebrate() -> void:
 
 
 func _draw() -> void:
+	if sitting:
+		_draw_sitting()
+		return
 	var moving := velocity.length() > 1.0
 	var step := int(_walk_time * 8.0) % 2 if moving else 0
 	var bob := step if moving else 0
@@ -84,3 +93,20 @@ func _draw() -> void:
 			var angle := float(index) * TAU / 6.0
 			var spark := Vector2(cos(angle) * (6.0 + travel), sin(angle) * (6.0 + travel) - 13.0)
 			draw_rect(Rect2(spark.round(), Vector2(2, 2)), Color(0.95, 0.86, 0.55, _celebration))
+
+
+func _draw_sitting() -> void:
+	draw_rect(Rect2(-10, -1, 21, 3), Color(0.015, 0.035, 0.05, 0.4))
+	draw_rect(Rect2(-7, -7, 15, 6), Color("295158"))
+	draw_rect(Rect2(-5, -11, 11, 9), Color("467c79"))
+	draw_rect(Rect2(-4, -11, 3, 7), Color("7fae9b"))
+	draw_rect(Rect2(-7, -2, 6, 3), Color("ac7e62"))
+	draw_rect(Rect2(2, -2, 6, 3), Color("ac7e62"))
+	draw_rect(Rect2(-6, -20, 12, 10), Color("132333"))
+	draw_rect(Rect2(-4, -22, 8, 3), Color("78a295"))
+	draw_rect(Rect2(-5, -19, 10, 8), Color("4f7775"))
+	draw_rect(Rect2(-3, -17, 7, 6), Color("d5b89a"))
+	draw_rect(Rect2(-3, -18, 7, 2), Color("685261"))
+	draw_rect(Rect2(-2, -14, 2, 1), Color("132333"))
+	draw_rect(Rect2(2, -14, 2, 1), Color("132333"))
+	draw_rect(Rect2(-5, -10, 11, 2), Color("c48f6d"))

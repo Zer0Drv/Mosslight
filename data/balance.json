@@ -1,0 +1,9 @@
+{
+  "moon_moss_seconds": 90.0,
+  "glow_bell_seconds": 120.0,
+  "harvest_amount": 1,
+  "restore_costs": [{"spores": 12, "dew": 8}, {"spores": 24, "dew": 16}],
+  "day_seconds": 720.0,
+  "dusk_seconds": 30.0,
+  "offline_cap_seconds": 720.0
+}

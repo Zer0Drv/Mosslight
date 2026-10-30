@@ -4,6 +4,7 @@ extends Node
 ## Muting this node never changes the project's shared audio buses.
 
 const AMBIENCE: AudioStreamWAV = preload("res://assets/audio/forest_ambience.wav")
+const COMPANION: AudioStreamWAV = preload("res://assets/audio/under_lamp.wav")
 const CUES: Dictionary[String, AudioStreamWAV] = {
 	"plant": preload("res://assets/audio/plant.wav"),
 	"harvest": preload("res://assets/audio/harvest.wav"),
@@ -21,6 +22,7 @@ var _headless: bool = false
 var _ambience_player: AudioStreamPlayer
 var _voices: Array[AudioStreamPlayer] = []
 var _next_voice: int = 0
+var _companion_player: AudioStreamPlayer
 
 
 func _ready() -> void:
@@ -42,6 +44,14 @@ func _ready() -> void:
 	_ambience_player.play()
 	_ambience_player.stream_paused = _muted
 	create_tween().tween_property(_ambience_player, "volume_db", AMBIENCE_VOLUME_DB, 1.6)
+	_companion_player = AudioStreamPlayer.new()
+	_companion_player.name = "LampLullaby"
+	var song := COMPANION.duplicate() as AudioStreamWAV
+	song.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	song.loop_end = int(song.get_length() * song.mix_rate)
+	_companion_player.stream = song
+	_companion_player.volume_db = -20.0
+	add_child(_companion_player)
 
 	for index in VOICE_COUNT:
 		var voice := AudioStreamPlayer.new()
@@ -72,6 +82,8 @@ func set_muted(value: bool) -> void:
 	_muted = value
 	if is_instance_valid(_ambience_player):
 		_ambience_player.stream_paused = value
+	if is_instance_valid(_companion_player):
+		_companion_player.stream_paused = value
 	if value:
 		for voice in _voices:
 			voice.stop()
@@ -79,3 +91,13 @@ func set_muted(value: bool) -> void:
 
 func is_muted() -> bool:
 	return _muted
+
+
+func set_companion(active: bool) -> void:
+	if not is_instance_valid(_companion_player):
+		return
+	if active:
+		_companion_player.play()
+		_companion_player.stream_paused = _muted
+	else:
+		_companion_player.stop()

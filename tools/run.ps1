@@ -1,7 +1,8 @@
 param(
     [ValidateSet('Editor', 'Play', 'Check')]
     [string]$Mode = 'Editor',
-    [string]$GodotDirectory = 'D:\Godot_v4.7.2'
+    [string]$GodotDirectory = 'D:\Godot_v4.7.2',
+    [switch]$Fresh
 )
 
 $ErrorActionPreference = 'Stop'
@@ -15,7 +16,11 @@ if (-not (Test-Path -LiteralPath $engineExecutable)) {
 if ($Mode -eq 'Editor') {
     & $engineExecutable --editor --path $projectDirectory
 } elseif ($Mode -eq 'Play') {
-    & $engineExecutable --path $projectDirectory
+    if ($Fresh) {
+        & $engineExecutable --path $projectDirectory -- --fresh-garden
+    } else {
+        & $engineExecutable --path $projectDirectory
+    }
 } else {
     if (-not (Test-Path -LiteralPath $consoleExecutable)) {
         throw "Godot console executable was not found at $consoleExecutable."
@@ -27,7 +32,7 @@ if ($Mode -eq 'Editor') {
     if ($LASTEXITCODE -ne 0 -or (Select-String -LiteralPath $importLog -Pattern 'SCRIPT ERROR:|ERROR:' -Quiet)) {
         throw "Godot import failed. See $importLog."
     }
-    foreach ($testName in @('smoke_test', 'save_test')) {
+    foreach ($testName in @('smoke_test', 'save_test', 'migration_test', 'mvp_test')) {
         $testLog = Join-Path $logDirectory ($testName + '.log')
         & $consoleExecutable --headless --path $projectDirectory --script ('res://tests/' + $testName + '.gd') --log-file $testLog
         if ($LASTEXITCODE -ne 0 -or (Select-String -LiteralPath $testLog -Pattern 'SCRIPT ERROR:|ERROR:' -Quiet)) {
