@@ -1,0 +1,56 @@
+{
+  "project": "苔灯镇 · Mosslight",
+  "status": "Original A/B/C selected as the primary art references by the user. Production assets and animation are not yet implemented.",
+  "selected_reference_set": "original_abc",
+  "a_style_comparison_preview": "a-style-preview-2026-10-29/manifest.json",
+  "generation_mode": "built-in image_gen",
+  "consistency_study": "consistency-v1/manifest.json",
+  "consistency_study_status": "Archived experiment, not selected. Its restrictive identity rules are not current production rules.",
+  "full_prompt_format": "Concatenate shared_prompt and the variant prompt_suffix without any additional separator.",
+  "shared_prompt": "Use case: stylized-concept. Asset type: preview-only art-direction concept for an original cozy 2D pixel farming game named Mosslight. Create a polished landscape 16:9 game-view concept. This is an ART STYLE PROPOSAL, not a game UI. Must be authentic crisp pixel art: clearly visible square pixel clusters, clean stepped silhouettes, restrained palette ramps, selective pixel outlines, no smooth painted rendering, no 3D, no blur, no vector look. An overhead 3/4 top-down 2D RPG camera with no horizon, not an isometric diorama. Same core scene for fair comparison: a forest clearing at gentle night, a small inhabited cottage upper left with a glowing round window, a small teal pond upper right, curved stepping-stone walkway through the middle, two compact planting beds near a standing moss lantern, a very cute chibi hooded lantern keeper slightly below center, round moon-moss plants glowing softly cool blue in shade, bell-shaped crops softly warm golden inside the lantern light. Forest trees frame the edges without hiding the gameplay. Clearly readable walking space. Main character is full body, two heads tall, large hood and tiny feet, tiny black eyes, a warm small hand lantern. Quiet, cozy, a little mysterious and SAFE; no scary forest. Soft nighttime illumination still bright enough to read all shapes. Original designs, no franchise characters, no borrowed recognizable game assets. No text, no logos, no HUD, no labels, no border, no watermark.",
+  "variants": [
+    {
+      "id": "A",
+      "name": "奶油绘本",
+      "file": "a-storybook-cg.png",
+      "planned_role": "Detailed story CG, chapter illustrations, cinematic keyframes; use separated layers for animation.",
+      "prompt_suffix": " DISTINCT DIRECTION A: a gentle illustrated bedtime story translated into pixel art. Muted sage green, creamy apricot windows, dusty lavender night shadows and warm beige pathways. Cottage is softly crooked hand-built timber with a moss-covered patchwork roof, rounded beams and little curtains. Tree canopies are delicate clustered scallops, ferns and little flowers as quiet details. Character wears a soft sage linen hood and muted ochre scarf, subtle peach cheeks, small stitched satchel. Pale glowing fungi. Cozy handcrafted texture with sparse intentional dithering. Softer and more storybook than a standard game forest, not candy saturated. Use slightly elongated organic shapes rather than all circles. Maintain crisp square pixels. A carefully composed playable-looking nighttime garden."
+    },
+    {
+      "id": "B",
+      "name": "团子苔林",
+      "file": "b-dumpling-forest.png",
+      "planned_role": "Shared gameplay visual baseline: settlement, home garden, ordinary forest and residents.",
+      "prompt_suffix": " DISTINCT DIRECTION B: irresistibly cute, rounded, plump woodland silhouettes. A sophisticated cute cozy pixel style, not babyish. The moss cottage is a squat acorn-shaped round house with a thick puffy moss-green dome roof, cream timber walls, a little rounded door and warm peach windows. Trees have large rounded dumpling-like canopy clusters and short friendly trunks. Fat soft mushrooms and large simple leaves, low visual noise. The hooded keeper has a huge round sage-green hood, a small creamy face with dot eyes and rosy cheeks, tiny stubby boots, a peach neckerchief, and a tiny rounded honey-colored lantern. Moon-moss plants resemble soft blue-green pompons, bell plants are plump golden teardrops. Palette is cozy jade/soft teal, muted mint, milky cream, apricot peach, dusk blue. Ground sits in a gentle teal dusk, lit areas warm honey; no murky dark patches. Sharply defined 2-3 tone pixel clusters, bold simple readable silhouettes, a pleasing toy-like roundness achieved with PIXELS, not 3D or smooth illustration. This direction must be noticeably rounder, chunkier and cuter than an ordinary pixel farm."
+    },
+    {
+      "id": "C",
+      "name": "糖果星夜",
+      "file": "c-candy-starlight.png",
+      "planned_role": "Fantasy regions, moonlit gardens, unusual flora and spirit NPCs. Retain the original pointed-hood character as an optional outfit or appearance-preset candidate.",
+      "prompt_suffix": " DISTINCT DIRECTION C: a sparkling fairy garden at blue-violet night, playful magical pixel art. Dominant periwinkle and blueberry indigo, mint-teal leaves, peach-gold usable lantern light, restrained rose-pink accents. Cottage is an enchanting tiny rounded woodland house with a tall curled violet moss roof, little star-shaped window trim and warm honey interior. Rounded purple-blue trees have fluffy lobed canopies and a few mint glints. Character wears a periwinkle oversized pointed hood with a peach pompom, dot eyes, rosy cheeks and a warm golden lantern. Plants are tiny luminous pastel bells and cyan moon-moss buds. Sprinkle a few pixel fireflies and tiny luminous floating motes, never overwhelm the game with glitter. Distinguish warm functional lantern pools from cooler decorative light. Clear graphic silhouettes, crisp intentional pixels and high palette contrast. Charming whimsical rather than goth or neon cyberpunk; more vividly magical than the other woodland directions."
+    }
+  ],
+  "unification_rules": [
+    "B/C share pixel scale, base body proportions, outline treatment, object scale and interaction markers; hats may add height without changing anatomy.",
+    "Preserve original differences in clothing, hat shapes, colors and regional architecture. Original C pointed hood and pompom are allowed and retained.",
+    "A retains the original detailed storybook atmosphere. Depictions of the same character or location must match the actual selected outfit and recognizable building features; different buildings need not share one roof silhouette.",
+    "Only recognizable fixed garden lanterns affect crop growth. Warm color alone is not a gameplay cue; handheld lamps, window lights and decorative glows do not affect crops.",
+    "Concept sheets are references, not production-ready tiles, sprites or animation clips."
+  ],
+  "character_appearance_candidates": [
+    {
+      "id": "woodland_outfit",
+      "reference": "b-dumpling-forest.png",
+      "features": "Round sage hood, peach neckerchief and warm natural colors.",
+      "status": "Retained design candidate; not implemented."
+    },
+    {
+      "id": "starlight_outfit",
+      "reference": "c-candy-starlight.png",
+      "features": "Original periwinkle pointed hood, peach pompom and star-night clothing silhouette.",
+      "status": "Retained for an alternate outfit or initial appearance preset; not implemented or assigned a separate character identity."
+    }
+  ],
+  "appearance_guidance": "Prefer two outfits or appearance presets sharing base anatomy, facial identity, animation timing and collision dimensions. Separate playable characters or NPCs require a later identity and narrative decision. Entering another region must not automatically change the equipped outfit."
+}

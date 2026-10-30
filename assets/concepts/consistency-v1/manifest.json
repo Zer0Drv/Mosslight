@@ -1,0 +1,58 @@
+{
+  "project": "苔灯镇 · Mosslight",
+  "version": 1,
+  "created": "2026-10-28",
+  "purpose": "Three identity-consistency samples: B gameplay art reference, C regional atmosphere variant, A story close-up.",
+  "status": "Archived experiment, not selected. User restored the original A/B/C as primary references. The restrictive identity rules below are historical, not current production requirements.",
+  "selection_status": "archived_not_selected",
+  "current_direction": "../manifest.json",
+  "generation_mode": "built-in image_gen",
+  "identity_anchor": "b-forest-baseline.png",
+  "variants": [
+    {
+      "id": "B",
+      "name": "团子苔林 · 统一基准",
+      "file": "b-forest-baseline.png",
+      "references": [
+        "../b-dumpling-forest.png"
+      ],
+      "prompt": "Use case: stylized-concept.\nAsset type: B baseline consistency sample for the original cozy 2D pixel game Mosslight.\nInput image 1: visual identity and environment reference. Create a refined new baseline illustration, preserving its recognizable round protagonist, cottage, and moss-topped garden lamp. This will be the exact identity anchor for two later images.\n\nScene: a quiet, friendly forest garden at gentle teal dusk. Landscape 16:9. Elevated three-quarter 2D game camera, no horizon. Cottage upper left, a small pond upper right, an open stepping-stone path, two modest planting beds near the path, protagonist in the foreground center. One fixed garden lamp beside the warm bell crop bed. Retain generous uncluttered walking space. Avoid adding townsfolk or animals.\nCharacter identity LOCK: very cute short chibi lantern keeper, two heads tall; large ROUND sage-green hood with a short folded tip, cream oval face, two small dark oval eyes, rosy cheeks, tiny brown forelock, peach triangular neckerchief, short sage cloak over cream tunic, tiny brown boots, small brown satchel. Full body clearly visible, about one eighth of the image height. A small handheld honey-colored brass lantern. No pointed wizard cap, pompom, elaborate eyes, realistic anatomy, elongated limbs, or changed costume.\nCottage identity LOCK: squat one-story cream-plaster and timber cottage, low broad rounded mound of green moss roof, short stone chimney at the left, one round cross-mullioned window on the left of one arched wooden door. Preserve these exact positions. No steep roof, curled roof tip, upper story, or star-shaped windows.\nFixed lamp identity LOCK: a short broad gray stacked-stone pedestal, warm amber glass housing with two visible vertical panes, thick round moss cap. It is distinct from the handheld lantern. A restrained warm apricot circular ground pool reaches only the nearby plump drooping golden bell crops. The blue-green round moon-moss bed is outside that light pool, with small localized cool sparkles but no ground-light pool. Home window and handheld lantern may be warm, but cannot appear to illuminate the crop beds.\nStyle: charming ROUND forms and deliberate crisp square pixel clusters, stepped edges, restrained 3-4 tone ramps per material. Cleaner and lower-noise than the reference, clear small silhouettes, no continuous painted gradients or soft blur, no 3D rendering. Shared colors: sage, dusty teal, milky cream, peach, honey, warm gray. The focal point is the cute keeper and fixed lamp. Lush but quiet surroundings; texture should not compete with the face.\nConstraints: no text, no labels, no HUD, no panels, no logos or watermark. This is one complete baseline scene, not a sprite sheet. Preserve a coherent original world, and show all three identity anchors clearly."
+    },
+    {
+      "id": "C",
+      "name": "糖果星夜 · 同场景秘境变体",
+      "file": "c-moonlit-variant.png",
+      "references": [
+        "b-forest-baseline.png",
+        "../c-candy-starlight.png"
+      ],
+      "prompt": "Use case: lighting-weather.\nAsset type: C moonlit secret-garden consistency sample for the original cozy 2D pixel game Mosslight.\nInput image 1: EDIT TARGET and absolute identity/composition anchor, the approved B baseline.\nInput image 2: supporting atmosphere reference ONLY, from the earlier C concept. Do NOT borrow its pointed hat, pompom, curled roof, changed lamps, or stars on doors.\nPrimary request: transform image 1 into its magical moonlit forest variant while keeping it unmistakably the SAME game, SAME protagonist, SAME house, SAME fixed lamp, SAME camera and SAME object locations. Preserve image 1's pixel scale, outline weight, path and planting-bed layout and relative object sizes.\nChanges permitted: surrounding outer tree foliage becomes dusty blue-violet and periwinkle with some mint tips; add a few restrained star-shaped wildflowers and hanging lavender sprigs in the outer margins. Ground remains largely shared dusty teal. Add a handful of cool firefly specks. Background water becomes a deeper blueberry teal. Keep small sage-green plant patches connecting path to forest. Cottage moss remains recognizable sage green under a cool reflected moon tint. Friendly, quiet, cute and safe.\nAbsolute character invariants: identical round sage-green hood with short folded tip; cream oval face, brown forelock, small dark oval eyes, rosy cheeks, peach neckerchief, sage cloak, cream tunic, tiny brown boots, brown satchel, same tiny honey-colored handheld lantern. Two-head-tall body and identical face and posture. Do not recolor the clothes purple; cool rim highlights only. No new characters or animals.\nAbsolute cottage invariants: identical low broad rounded moss mound roof, cream plaster and timber, one short stone chimney left, one round cross-mullioned window LEFT of one arched wooden door. Same wall width/height. No curled eaves, tall roof, upper floor, star door or altered facade.\nAbsolute fixed lamp invariants: same broad gray stone pedestal, squat amber glass housing with two visible vertical panes, thick ROUND green moss cap; never change its shape into a star. Keep the warm apricot crop-growing ground-light area and golden drooping bell crop shapes identical. The round blue-green moon-moss bed remains outside this warm light. Cool decorative glow remains local and faint, not a competing ground-light pool. Handheld and house-window lights do not illuminate planting beds.\nStyle: exact same crisp stepped pixel art as image 1; same small pixel clusters, restrained ramps, readable shapes. This is a restrained environment variant, not a different art style, not a global purple filter. No smooth painting, 3D, blur, text, labels, HUD, panels, watermarks or logos."
+    },
+    {
+      "id": "A",
+      "name": "奶油绘本 · 同世界剧情近景",
+      "file": "a-story-closeup.png",
+      "references": [
+        "b-forest-baseline.png",
+        "../a-storybook-cg.png"
+      ],
+      "prompt": "Use case: identity-preserve.\nAsset type: A cinematic story close-up consistency sample for the original cozy 2D pixel game Mosslight.\nInput image 1: absolute character, cottage, fixed-lamp and plant identity anchor; use these designs faithfully.\nInput image 2: supporting reference for richer handmade texture and quiet storybook atmosphere ONLY. Its different taller timber cottage and longer character body must NOT be copied.\nPrimary request: create one beautiful 16:9 narrative close-up of the SAME little lantern keeper beside the SAME moss-topped fixed garden lamp, with the SAME round cottage visible behind. This is a cinematic shot within the same world, not a redesign. Camera is closer and slightly lower than the game view. Main character full body about one third of frame height in foreground, fixed lamp beside them, recognizable cottage behind with entire roof, chimney, door and window visible. Close framing and careful lighting bring emotion; do not create a poster montage. The keeper pauses with a gentle curious smile looking toward the lamp; no dramatic event.\nCharacter identity LOCK: two heads tall exactly, huge ROUND sage hood with short folded tip; brown forelock, cream oval face, small dark oval eyes and rosy cheeks; peach triangular scarf, short sage cloak, cream tunic, tiny brown boots, small brown satchel; identical honey-colored brass handheld lantern. Keep tiny limbs and round silhouette, no lengthening body/legs, no realistic face, anime eyes, tall pointed cap, pompom, or new costume. Texture may add subtle fabric stitches, never change shape.\nCottage LOCK: a squat one-story cream-plaster/timber round house with broad LOW rounded green moss roof; short stone chimney at LEFT; one round cross-mullioned window LEFT of one arched wooden door. It must look like a closer shot of image 1's exact cottage, not a new building. No steep gable, attic window, second floor, large porch, or curled roof.\nFixed lamp LOCK: broad short stacked-gray-stone pedestal, squat amber glass housing with two visible vertical panes, thick round moss cap, exact same recognizable proportions as image 1. The golden drooping bell plants sit in its warm apricot ground light; round blue-green moon moss stays in cool shade. Keep the handheld lantern smaller and visually distinct. Decorative blue glints must not create broad competing light pools.\nRendering: detailed but clearly PIXEL ART, crisp square clusters and stepped outlines. Same soft sage, teal, cream, peach and honey palette as B. Add controlled moss clusters, quiet wood grain, a few fabric stitches, richer discrete shadow ramps and beautifully staged warm/cool contrast. Details subordinate to cute simple silhouettes. Background readable, no blur. More detail through a closer camera and finer pixel craftsmanship, not through changing anatomical proportions. Warm, intimate, a little mysterious and peaceful.\nConstraints: original game story frame only, no new characters or animals, no text, labels, HUD, panels, watermark or logos. No painterly gradients, no photorealism, no 3D. Preserve every identity anchor from image 1."
+    }
+  ],
+  "historical_identity_rules": [
+    "Same keeper: two heads tall, round sage hood, brown forelock, small dark eyes, cream face, peach scarf, short cloak, cream tunic, brown boots and satchel, honey-colored handheld lamp.",
+    "Same cottage: squat one-story form, broad low moss roof, left stone chimney, round cross-mullioned window left of arched wood door.",
+    "Same fixed garden lamp: broad gray stone pedestal, amber paned housing and round moss cap. Handheld lamps retain their smaller brass form.",
+    "B/C share camera, pixel scale, outlines and object proportions. C changes foliage and ambient color without recoloring or redesigning the protagonist.",
+    "A increases shot-specific detail and camera proximity while keeping the same silhouettes and head-to-body proportions.",
+    "Moon moss keeps blue-green round clusters; glow bells keep drooping golden bell silhouettes.",
+    "Only recognizable fixed garden lamps affect crop growth. Warm color alone is insufficient; keep shape, interaction feedback and the light-domain overlay consistent."
+  ],
+  "review_notes": [
+    "B/C intentionally reuse scene layout to isolate art-direction changes; this is not yet a separate playable biome.",
+    "Decorative warm lamp glows remain in the concepts. In-game lighting radius must come from GardenState, not from the drawn glow.",
+    "C decorative star motes must not share the harvest-ready feedback design.",
+    "Generated images do not certify a production pixel grid. Rebuild sprites and tiles at the game's native scale and verify readability at 640x360.",
+    "A is a flattened still. Animation requires separated layers or redrawn frames."
+  ]
+}

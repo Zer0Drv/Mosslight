@@ -1,0 +1,11 @@
+# Godot 自动生成的导入缓存与编辑器状态。
+.godot/
+*.tmp
+*.log
+logs/
+builds/
+exports/
+export_credentials.cfg
+.DS_Store
+Thumbs.db
+# .gd.uid 与原始素材属于项目，应提交。
