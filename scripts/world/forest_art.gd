@@ -1,7 +1,11 @@
 class_name ForestArt
 extends Node2D
 ## 静态林地只绘制一次；Godot 会缓存这个节点的画布命令。
-## 原创程序像素稿：轮廓由像素带组成，不依赖外部纹理。
+## 导入的透明像素物件与程序地表分层，位置和碰撞仍由原地图定义。
+const COTTAGE: Texture2D = preload("res://assets/art/runtime/cottage.png")
+const TREE: Texture2D = preload("res://assets/art/runtime/tree.png")
+const STUMP: Texture2D = preload("res://assets/art/runtime/stump.png")
+const MUSHROOM_FERN: Texture2D = preload("res://assets/art/runtime/mushroom_fern.png")
 
 const TREE_SPOTS: Array[Vector2] = [
 	Vector2(100, 192), Vector2(165, 238), Vector2(224, 196),
@@ -35,7 +39,7 @@ func _draw() -> void:
 	# 屏幕边缘的蕨丛和巨叶，形成有层次的林下空间。
 	for origin: Vector2 in [Vector2(230, 502), Vector2(340, 528), Vector2(648, 505), Vector2(771, 432), Vector2(214, 302), Vector2(600, 227)]:
 		_fern(origin, Color("3c685a"), 17)
-		_fern(origin + Vector2(17, 4), Color("42604f"), 12)
+		draw_texture(MUSHROOM_FERN, origin + Vector2(4, -19), Color("a5b9a5"))
 
 
 func _ground() -> void:
@@ -131,69 +135,8 @@ func _mushroom(origin: Vector2, small: bool) -> void:
 
 
 func _house() -> void:
-	var p := HOUSE.position
-	_ellipse(Rect2(p + Vector2(-8, 81), Vector2(132, 24)), Color("1b2c30"), 3)
-	# 略微不对称的木屋：坡屋顶、草苔、石基和手作横梁。
-	draw_rect(Rect2(p + Vector2(8, 42), Vector2(98, 50)), Color("5a514b"))
-	draw_rect(Rect2(p + Vector2(11, 43), Vector2(92, 46)), Color("78664f"))
-	for y in range(49, 88, 7):
-		draw_rect(Rect2(p + Vector2(11, y), Vector2(92, 1)), Color("514b43"))
-		draw_rect(Rect2(p + Vector2(12, y + 1), Vector2(90, 1)), Color("857253"))
-	draw_rect(Rect2(p + Vector2(8, 42), Vector2(5, 49)), Color("454440"))
-	draw_rect(Rect2(p + Vector2(101, 42), Vector2(5, 49)), Color("454440"))
-	draw_rect(Rect2(p + Vector2(8, 88), Vector2(98, 8)), Color("485552"))
-	for x in range(10, 104, 13):
-		draw_rect(Rect2(p + Vector2(x, 88), Vector2(10, 2)), Color("73806b"))
-		draw_rect(Rect2(p + Vector2(x + 5, 94), Vector2(8, 2)), Color("344543"))
-	# 屋顶使用多层台阶形状；瓦片和苔簇打破整齐边界。
-	var roof := PackedVector2Array([p + Vector2(-5, 44), p + Vector2(-5, 38), p + Vector2(4, 38), p + Vector2(4, 29), p + Vector2(14, 29), p + Vector2(14, 21), p + Vector2(25, 21), p + Vector2(25, 13), p + Vector2(36, 13), p + Vector2(36, 6), p + Vector2(79, 6), p + Vector2(79, 13), p + Vector2(91, 13), p + Vector2(91, 23), p + Vector2(102, 23), p + Vector2(102, 31), p + Vector2(112, 31), p + Vector2(112, 40), p + Vector2(119, 40), p + Vector2(119, 47)])
-	draw_colored_polygon(roof, Color("273b3b"))
-	for row in range(5):
-		var start := 34 - row * 10
-		var stop := 81 + row * 9
-		for x in range(start, stop, 10):
-			var tile := p + Vector2(x + (row % 2) * 3, 10 + row * 7)
-			draw_rect(Rect2(tile, Vector2(9, 5)), Color("49604f") if (x + row) % 3 else Color("536952"))
-			draw_rect(Rect2(tile + Vector2(1, 0), Vector2(7, 1)), Color("6d7d58"))
-	draw_rect(Rect2(p + Vector2(-4, 43), Vector2(121, 4)), Color("36483f"))
-	for cluster: Vector2 in [Vector2(8, 39), Vector2(26, 24), Vector2(57, 9), Vector2(80, 19), Vector2(98, 39)]:
-		_ellipse(Rect2(p + cluster, Vector2(17, 5)), Color("6b8557"), 1)
-		draw_rect(Rect2(p + cluster + Vector2(4, 4), Vector2(2, 6)), Color("4e7352"))
-	# 烟囱和远处的一缕淡烟。
-	draw_rect(Rect2(p + Vector2(85, -1), Vector2(12, 21)), Color("4c5354"))
-	draw_rect(Rect2(p + Vector2(82, -3), Vector2(17, 5)), Color("6e7170"))
-	draw_rect(Rect2(p + Vector2(88, 4), Vector2(6, 2)), Color("7d7c70"))
-	_ellipse(Rect2(p + Vector2(85, -16), Vector2(12, 6)), Color(0.55, 0.62, 0.63, 0.12), 2)
-	_ellipse(Rect2(p + Vector2(88, -28), Vector2(18, 7)), Color(0.55, 0.62, 0.63, 0.07), 2)
-	# 门与暖光窗。
-	draw_rect(Rect2(p + Vector2(46, 58), Vector2(25, 34)), Color("333e3b"))
-	draw_rect(Rect2(p + Vector2(49, 60), Vector2(19, 31)), Color("4f5143"))
-	for x in [52, 58, 64]:
-		draw_rect(Rect2(p + Vector2(x, 62), Vector2(1, 27)), Color("66684c"))
-	draw_rect(Rect2(p + Vector2(63, 77), Vector2(2, 2)), Color("dcbf79"))
-	_window(p + Vector2(20, 56), Vector2(16, 20))
-	_window(p + Vector2(80, 56), Vector2(15, 17))
-	_stone(p + Vector2(45, 95), Vector2(29, 7), 0)
-	_stone(p + Vector2(48, 103), Vector2(24, 6), 1)
-	# 窗台、花盆、悬挂月纹牌。
-	draw_rect(Rect2(p + Vector2(17, 77), Vector2(22, 3)), Color("41463c"))
-	draw_rect(Rect2(p + Vector2(22, 76), Vector2(7, 5)), Color("966f57"))
-	_fern(p + Vector2(25, 76), Color("90a56b"), 6)
-	draw_rect(Rect2(p + Vector2(75, 43), Vector2(1, 7)), Color("84906d"))
-	draw_rect(Rect2(p + Vector2(72, 49), Vector2(8, 9)), Color("374a43"))
-	draw_arc(p + Vector2(76, 53), 2.0, 0.3, 4.2, 7, Color("ccb97e"), 1.0, false)
-	# 藤蔓攀附右侧横梁。
-	for y in range(48, 87, 6):
-		draw_rect(Rect2(p + Vector2(103, y), Vector2(1, 6)), Color("577250"))
-		draw_rect(Rect2(p + Vector2(100, y), Vector2(4, 2)), Color("7d8f5c"))
-
-
-func _window(point: Vector2, size: Vector2) -> void:
-	draw_rect(Rect2(point - Vector2.ONE, size + Vector2(2, 2)), Color("313d38"))
-	draw_rect(Rect2(point, size), Color("d69e61"))
-	draw_rect(Rect2(point + Vector2(2, 2), size - Vector2(4, 4)), Color("edc58b"))
-	draw_rect(Rect2(point + Vector2(size.x / 2, 0), Vector2(2, size.y)), Color("6e654b"))
-	draw_rect(Rect2(point + Vector2(0, size.y / 2), Vector2(size.x, 2)), Color("6e654b"))
+	_ellipse(Rect2(HOUSE.position + Vector2(-8, 81), Vector2(132, 24)), Color("1b2c30"), 3)
+	draw_texture(COTTAGE, HOUSE.position + Vector2(-6, -7), Color("d8e0d7"))
 
 
 func _pond() -> void:
@@ -219,48 +162,15 @@ func _pond() -> void:
 
 
 func _tree(origin: Vector2, variation: int) -> void:
-	var tint := Color("264744") if variation % 3 else Color("2d424b")
 	_ellipse(Rect2(origin + Vector2(-36, -5), Vector2(74, 22)), Color("142a2d"), 3)
-	# 像素根系和分叉树干。
-	draw_colored_polygon(PackedVector2Array([origin + Vector2(-14, 7), origin + Vector2(-6, -4), origin + Vector2(-6, -45), origin + Vector2(7, -47), origin + Vector2(8, -5), origin + Vector2(20, 7), origin + Vector2(6, 4), origin + Vector2(2, 0), origin + Vector2(-4, 6)]), Color("3b3b39"))
-	draw_rect(Rect2(origin + Vector2(-2, -38), Vector2(4, 40)), Color("5b5244"))
-	draw_rect(Rect2(origin + Vector2(3, -29), Vector2(2, 31)), Color("6a5b47"))
-	draw_line(origin + Vector2(0, -27), origin + Vector2(-20, -45), Color("4b493d"), 5.0)
-	draw_line(origin + Vector2(5, -31), origin + Vector2(22, -50), Color("4b493d"), 4.0)
-	# 各簇树冠重叠成不规则轮廓，阴影、叶片和苔藓共用窄色阶。
-	_canopy(origin + Vector2(-26, -47), Vector2(48, 37), tint.darkened(0.14), variation + 1)
-	_canopy(origin + Vector2(22, -54), Vector2(53, 41), tint, variation + 2)
-	_canopy(origin + Vector2(-4, -68), Vector2(64, 45), tint.lightened(0.07), variation + 3)
-	_canopy(origin + Vector2(-24, -75), Vector2(42, 31), tint.lightened(0.05), variation + 4)
-	_canopy(origin + Vector2(14, -88), Vector2(43, 31), tint.lightened(0.1), variation + 5)
-	for offset: Vector2 in [Vector2(-26, -35), Vector2(22, -37), Vector2(6, -55)]:
-		draw_rect(Rect2(origin + offset, Vector2(2, 9)), Color("4b6e57"))
-		draw_rect(Rect2(origin + offset + Vector2(-2, 7), Vector2(3, 4)), Color("6b8060"))
-	if variation % 3 == 0:
-		_mushroom(origin + Vector2(10, 4), true)
-
-
-func _canopy(center: Vector2, size: Vector2, color: Color, variation: int) -> void:
-	var rect := Rect2(center - size * 0.5, size)
-	_ellipse(Rect2(rect.position + Vector2(0, 4), rect.size), color.darkened(0.2), 3)
-	_ellipse(rect, color, 3)
-	_ellipse(Rect2(rect.position + Vector2(5, 2), Vector2(size.x * 0.6, size.y * 0.4)), color.lightened(0.06), 2)
-	for index in range(17):
-		var point := rect.position + Vector2(_random.randi_range(7, int(size.x) - 8), _random.randi_range(5, int(size.y) - 8))
-		var leaf_color := color.lightened(0.13) if (index + variation) % 3 else color.darkened(0.12)
-		draw_rect(Rect2(point.round(), Vector2(_random.randi_range(3, 6), 2)), leaf_color)
-		draw_rect(Rect2((point + Vector2(2, -1)).round(), Vector2(2, 1)), leaf_color)
+	# 现有全树冠碰撞覆盖此轮廓；冷色调使树木退到夜色背景。
+	var tint := Color("779a97") if variation % 3 else Color("818fa0")
+	draw_texture(TREE, origin + Vector2(-56, -108), tint)
 
 
 func _stump(origin: Vector2) -> void:
 	_ellipse(Rect2(origin + Vector2(-16, -2), Vector2(34, 12)), Color("1b3232"), 2)
-	draw_rect(Rect2(origin + Vector2(-11, -14), Vector2(24, 19)), Color("584d43"))
-	for x in [-8, -3, 4, 9]:
-		draw_rect(Rect2(origin + Vector2(x, -11), Vector2(2, 14)), Color("716149"))
-	_ellipse(Rect2(origin + Vector2(-12, -18), Vector2(26, 10)), Color("8d8061"), 1)
-	_ellipse(Rect2(origin + Vector2(-7, -16), Vector2(16, 5)), Color("615c48"), 1)
-	_ellipse(Rect2(origin + Vector2(-4, -15), Vector2(9, 3)), Color("a0946c"), 1)
-	_mushroom(origin + Vector2(-11, -1), true)
+	draw_texture(STUMP, origin + Vector2(-20, -25), Color("c4cfbd"))
 
 
 func _sign(origin: Vector2) -> void:

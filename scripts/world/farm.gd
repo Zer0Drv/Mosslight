@@ -10,6 +10,18 @@ const POND_RECT := Rect2(660, 300, 112, 88)
 const INTERACTION_RADIUS := 20.0
 const ANIMATION_STEP := 1.0 / 12.0
 const ForestArtScript := preload("res://scripts/world/forest_art.gd")
+const MOON_FRAMES: Array[Texture2D] = [
+	preload("res://assets/art/runtime/moon_moss_0.png"), preload("res://assets/art/runtime/moon_moss_1.png"),
+	preload("res://assets/art/runtime/moon_moss_2.png"), preload("res://assets/art/runtime/moon_moss_3.png"),
+]
+const BELL_FRAMES: Array[Texture2D] = [
+	preload("res://assets/art/runtime/glow_bell_0.png"), preload("res://assets/art/runtime/glow_bell_1.png"),
+	preload("res://assets/art/runtime/glow_bell_2.png"), preload("res://assets/art/runtime/glow_bell_3.png"),
+]
+const LANTERN_FRAMES: Array[Texture2D] = [
+	preload("res://assets/art/runtime/lantern_broken.png"), preload("res://assets/art/runtime/lantern_off.png"),
+	preload("res://assets/art/runtime/lantern_on.png"),
+]
 
 var garden: GardenState
 var _target_cell := Vector2i(-1, -1)
@@ -238,73 +250,40 @@ func _draw_light_ranges() -> void:
 			draw_rect(Rect2(dash, Vector2(2, 2)), color)
 
 
-func _draw_moon_moss(point: Vector2, growth: float, thriving: bool) -> void:
-	var color := Color("94cbbb") if thriving else Color("648878")
-	var leaf := Color("70a79b") if thriving else Color("4d7264")
-	var width := 4 + floori(growth * 8.0)
-	_pixel_ellipse(self, Rect2(point + Vector2(-width / 2, -3), Vector2(width, 5)), Color("385952"), 1)
-	for offset: Vector2 in [Vector2(-3, -3), Vector2(2, -4), Vector2(0, -1)]:
-		var size := 2 + floori(growth * 3.0)
-		draw_rect(Rect2(point + offset - Vector2(0, size), Vector2(3, size)), leaf)
-		draw_rect(Rect2(point + offset - Vector2(1, size), Vector2(4, 2)), color)
-	if growth > 0.5:
-		draw_rect(Rect2(point + Vector2(-4, -8), Vector2(1, 3)), Color("c6d8d0"))
-		draw_rect(Rect2(point + Vector2(4, -6), Vector2(1, 2)), Color("b6d4cc"))
+func _growth_frame(growth: float) -> int:
 	if growth >= 1.0:
-		var glow := 0.13 + sin(_animation_time * 2.0 + point.x) * 0.035
-		_pixel_ellipse(self, Rect2(point + Vector2(-8, -12), Vector2(17, 15)), Color(0.52, 0.9, 0.85, glow), 2)
-		draw_rect(Rect2(point + Vector2(0, -10), Vector2(2, 2)), Color("e3f2da"))
+		return 3
+	if growth >= 0.6:
+		return 2
+	return 1 if growth >= 0.25 else 0
+
+
+func _draw_moon_moss(point: Vector2, growth: float, thriving: bool) -> void:
+	var tint := Color.WHITE if thriving or growth >= 1.0 else Color("83948c")
+	draw_texture(MOON_FRAMES[_growth_frame(growth)], point - Vector2(8, 12), tint)
+	if growth >= 1.0:
+		var glow := 0.11 + sin(_animation_time * 2.0 + point.x) * 0.03
+		_pixel_ellipse(self, Rect2(point + Vector2(-8, -8), Vector2(16, 10)), Color(0.52, 0.9, 0.85, glow), 2)
+		# 成熟标记独立于环境星点；保留方形露珠而不是高茎蓝花。
+		draw_rect(Rect2(point + Vector2(0, -9), Vector2(2, 2)), Color("e3f2da"))
 
 
 func _draw_glow_bell(point: Vector2, growth: float, thriving: bool) -> void:
-	var height := 3 + floori(growth * 9.0)
-	var green := Color("8b9e68") if thriving else Color("586d58")
-	draw_rect(Rect2(point + Vector2(0, -height), Vector2(1, height)), green)
-	draw_line(point + Vector2(0, -3), point + Vector2(-4, -6), green, 1.0)
-	draw_rect(Rect2(point + Vector2(-5, -7), Vector2(4, 2)), green)
-	draw_rect(Rect2(point + Vector2(1, -5), Vector2(4, 2)), green.lightened(0.08))
-	if growth < 0.3:
-		draw_rect(Rect2(point + Vector2(-1, -height - 2), Vector2(3, 3)), Color("ab9471"))
-		return
-	var flower := point + Vector2(-1, -height)
-	var gold := Color("e2b976") if thriving else Color("8c8a71")
-	draw_rect(Rect2(flower + Vector2(-2, -1), Vector2(5, 5)), gold)
-	draw_rect(Rect2(flower + Vector2(-3, 2), Vector2(7, 2)), gold)
-	draw_rect(Rect2(flower + Vector2(-1, 0), Vector2(3, 3)), Color("efd6a1") if thriving else Color("b1ad89"))
-	if growth > 0.7:
-		draw_line(point + Vector2(0, -6), point + Vector2(5, -9), green, 1.0)
-		draw_rect(Rect2(point + Vector2(4, -10), Vector2(4, 4)), gold)
+	var tint := Color.WHITE if thriving or growth >= 1.0 else Color("919080")
+	draw_texture(BELL_FRAMES[_growth_frame(growth)], point - Vector2(8, 14), tint)
 	if growth >= 1.0:
-		var glow := 0.13 + sin(_animation_time * 2.3 + point.y) * 0.035
-		_pixel_ellipse(self, Rect2(flower + Vector2(-7, -6), Vector2(15, 15)), Color(1.0, 0.75, 0.38, glow), 2)
-		draw_rect(Rect2(flower + Vector2(0, 0), Vector2(1, 2)), Color("fff0c4"))
+		var glow := 0.11 + sin(_animation_time * 2.3 + point.y) * 0.03
+		_pixel_ellipse(self, Rect2(point + Vector2(-7, -13), Vector2(15, 12)), Color(1.0, 0.75, 0.38, glow), 2)
+		draw_rect(Rect2(point + Vector2(0, -14), Vector2(2, 2)), Color("fff0c4"))
 
 
 func _draw_lantern(lantern: Dictionary, index: int) -> void:
 	var point: Vector2 = lantern["position"]
 	var restored: bool = lantern["restored"]
 	var lit := restored and bool(lantern["lit"])
-	_pixel_ellipse(self, Rect2(point + Vector2(-12, -5), Vector2(25, 12)), Color("243e3b"), 2)
-	_pixel_ellipse(self, Rect2(point + Vector2(-8, -4), Vector2(17, 8)), Color("65715b"), 1)
-	draw_rect(Rect2(point + Vector2(-5, -5), Vector2(11, 2)), Color("909579"))
-	draw_rect(Rect2(point + Vector2(-2, -24), Vector2(4, 21)), Color("535a48"))
-	draw_rect(Rect2(point + Vector2(-1, -23), Vector2(1, 18)), Color("87906a"))
-	if restored:
-		draw_rect(Rect2(point + Vector2(-7, -36), Vector2(14, 4)), Color("5e6c50"))
-		draw_rect(Rect2(point + Vector2(-4, -38), Vector2(8, 3)), Color("89996b"))
-		draw_rect(Rect2(point + Vector2(-6, -32), Vector2(12, 12)), Color("515e48"))
-		draw_rect(Rect2(point + Vector2(-4, -31), Vector2(8, 9)), Color("deb878") if lit else Color("455d58"))
-		draw_rect(Rect2(point + Vector2(-2, -30), Vector2(4, 7)), Color("ffe3a4") if lit else Color("6f8671"))
-		draw_rect(Rect2(point + Vector2(-6, -21), Vector2(12, 3)), Color("6e7855"))
-		draw_rect(Rect2(point + Vector2(0, -32), Vector2(1, 12)), Color("8c8d61"))
-	else:
-		draw_line(point + Vector2(-6, -32), point + Vector2(7, -28), Color("536857"), 4.0)
-		draw_rect(Rect2(point + Vector2(-5, -28), Vector2(2, 7)), Color("576b59"))
-		draw_rect(Rect2(point + Vector2(5, -27), Vector2(2, 6)), Color("576b59"))
-		draw_rect(Rect2(point + Vector2(-5, -20), Vector2(12, 3)), Color("66735a"))
-		draw_rect(Rect2(point + Vector2(0, -25), Vector2(2, 5)), Color("334e4b"))
-		draw_rect(Rect2(point + Vector2(-5, -31), Vector2(5, 2)), Color("819264"))
-		draw_rect(Rect2(point + Vector2(-1, -13), Vector2(2, 2)), Color("93a892"))
+	var frame := 2 if lit else 1 if restored else 0
+	_pixel_ellipse(self, Rect2(point + Vector2(-12, -4), Vector2(25, 9)), Color("243e3b"), 2)
+	draw_texture(LANTERN_FRAMES[frame], point - Vector2(16, 42))
 	for y in range(1, index + 2):
 		draw_rect(Rect2(point + Vector2(-5 + y * 3, 0), Vector2(1, 2)), Color("afb78a"))
 
@@ -313,7 +292,7 @@ func _draw_target() -> void:
 	var color := Color("e7d4a0")
 	if _target_lantern >= 0:
 		var point: Vector2 = garden.lanterns[_target_lantern]["position"]
-		_draw_brackets(Rect2(point + Vector2(-10, -39), Vector2(20, 45)), color)
+		_draw_brackets(Rect2(point + Vector2(-16, -41), Vector2(32, 45)), color)
 	elif garden.plots.has(_target_cell):
 		_draw_brackets(Rect2(Vector2(_target_cell * CELL_SIZE), Vector2(16, 16)), color)
 

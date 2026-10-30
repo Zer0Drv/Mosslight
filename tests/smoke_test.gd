@@ -8,6 +8,25 @@ var _harvest_events: Array[Dictionary] = []
 var _restored_events: Array[int] = []
 
 
+class CueRecorder:
+	extends ForestAudio
+	var requested: Array[String] = []
+
+	func play_cue(kind: String) -> void:
+		requested.append(kind)
+
+	func update_footsteps(_world_position: Vector2, _delta: float) -> void:
+		pass
+
+
+class StepRecorder:
+	extends ForestAudio
+	var requested: Array[String] = []
+
+	func play_cue(kind: String) -> void:
+		requested.append(kind)
+
+
 func _initialize() -> void:
 	_run.call_deferred()
 
@@ -16,6 +35,7 @@ func _run() -> void:
 	_check_state_machine()
 	_check_snapshot_validation()
 	_check_inputs()
+	_check_footstep_timing()
 	await _check_main_scene()
 	paused = false
 	if _failures == 0:
@@ -211,6 +231,35 @@ func _check_inputs() -> void:
 			_check(found, "%s 未绑定 %s。" % [action, OS.get_keycode_string(code)])
 
 
+func _check_footstep_timing() -> void:
+	var sequences: Array = []
+	for render_rate in [60, 120]:
+		var recorder := StepRecorder.new()
+		var position := Vector2.ZERO
+		recorder.update_footsteps(position, 0.0)
+		# Both runs have 60 physics updates/s and travel 88px. At 120 render fps,
+		# every second frame sees no movement and must not erase the step phase.
+		for frame in range(render_rate):
+			if render_rate == 60 or frame % 2 == 0:
+				position.x += 88.0 / 60.0
+			recorder.update_footsteps(position, 1.0 / render_rate)
+		_check(recorder.requested.size() >= 3 and recorder.requested.size() <= 5, "一秒正常移动应产生有限次脚步。")
+		sequences.append(recorder.requested.duplicate())
+		recorder.requested.clear()
+		for frame in range(render_rate):
+			recorder.update_footsteps(position, 1.0 / render_rate)
+		position.x += 1000.0
+		recorder.update_footsteps(position, 1.0 / render_rate)
+		_check(recorder.requested.is_empty(), "停步、靠墙及传送不应播放脚步。")
+		recorder.set_muted(true)
+		for frame in range(render_rate):
+			position.x += 88.0 / render_rate
+			recorder.update_footsteps(position, 1.0 / render_rate)
+		_check(recorder.requested.is_empty(), "静音移动不应请求脚步。")
+		recorder.free()
+	_check(sequences[0] == sequences[1], "相同实际移动在60/120渲染帧率下应有相同脚步节奏。")
+
+
 func _check_main_scene() -> void:
 	var packed := load("res://scenes/main.tscn") as PackedScene
 	if packed == null:
@@ -232,6 +281,8 @@ func _check_main_scene() -> void:
 	_check(player.global_position.is_equal_approx(farm.get_spawn_position()), "角色应在农场出生点初始化。")
 	await _check_movement(player, farm)
 	await _check_scene_gardening(garden, player, farm)
+	await _check_appearance_menu(game, garden, player, hud)
+	await _check_audio_feedback(game, garden, player, farm)
 	paused = false
 	game.queue_free()
 	await process_frame
@@ -305,6 +356,98 @@ func _check_scene_gardening(garden: GardenState, player: FarmPlayer, farm: FarmW
 	await _press_action("interact")
 	_check(garden.total_harvests == 1 and garden.resources["spores"] == 3, "恢复后成熟植物应可通过主场景输入收获。")
 	_check(garden.plots[cell]["crop"] == "", "收获后前方苗床应重新为空。")
+
+
+func _check_appearance_menu(game: Node, garden: GardenState, player: FarmPlayer, hud: FarmHUD) -> void:
+	var moss := hud.find_child("AppearanceMoss", true, false) as Button
+	var star := hud.find_child("AppearanceStar", true, false) as Button
+	_check(moss != null and star != null, "暂停菜单应提供两套外观按钮。")
+	if moss == null or star == null:
+		return
+	await _press_action("pause")
+	var before := garden.snapshot()
+	var position_before := player.global_position
+	var collision_before: Vector2 = player.get_node("FeetCollision").position
+	star.pressed.emit()
+	await process_frame
+	_check(player.appearance == 1 and star.button_pressed and not moss.button_pressed, "星夜装按钮应同步主角与选中状态。")
+	_check(paused and garden.snapshot() == before, "切换服饰不能推进作物或更改资源。")
+	_check(player.global_position == position_before and player.get_node("FeetCollision").position == collision_before, "换装不能移动角色或改变脚部碰撞。")
+	moss.pressed.emit()
+	_check(player.appearance == 0 and moss.button_pressed and not star.button_pressed, "苔林装按钮应恢复默认外观。")
+	star.pressed.emit()
+	await _press_action("pause")
+	_check(not paused and player.appearance == 1, "继续游戏应保留本次选择的星夜装。")
+	game.call("_select_appearance", 0)
+	_check(player.appearance == 1, "游戏运行中不能通过隐藏菜单切换外观。")
+	player.appearance = 0
+	hud.set_appearance(0)
+
+
+func _check_audio_feedback(game: Node, garden: GardenState, player: FarmPlayer, farm: FarmWorld) -> void:
+	# Exercise actual input routes and garden signals. Recording requests avoids
+	# requiring a sound device in CI while still detecting false/double successes.
+	var original := game.get("music") as ForestAudio
+	var recorder := CueRecorder.new()
+	game.add_child(recorder)
+	game.set("music", recorder)
+	garden.reset()
+	var cell := _empty_cell(garden, true)
+	player.global_position = farm.to_global(_center(cell)) + Vector2(0, Garden.CELL_SIZE)
+	player.facing = Vector2.UP
+	await _press_and_expect_cue("select_moon", recorder, "")
+	await _press_and_expect_cue("select_bell", recorder, "seed_select")
+	await _press_and_expect_cue("select_bell", recorder, "")
+	await _press_and_expect_cue("nourish", recorder, "denied")
+	await _press_and_expect_cue("clear_crop", recorder, "denied")
+	await _press_and_expect_cue("interact", recorder, "plant")
+	await _press_and_expect_cue("nourish", recorder, "nourish")
+	await _press_and_expect_cue("clear_crop", recorder, "clear")
+	await _press_and_expect_cue("clear_crop", recorder, "denied")
+	await _press_and_expect_cue("interact", recorder, "plant")
+	garden.advance(24.0)
+	await _press_and_expect_cue("nourish", recorder, "denied")
+	await _press_and_expect_cue("clear_crop", recorder, "denied")
+	await _press_and_expect_cue("interact", recorder, "harvest_bell")
+	await _press_and_expect_cue("select_moon", recorder, "seed_select")
+	cell = _empty_cell(garden, false)
+	player.global_position = farm.to_global(_center(cell)) + Vector2(0, Garden.CELL_SIZE)
+	await _press_and_expect_cue("interact", recorder, "plant")
+	garden.advance(18.0)
+	await _press_and_expect_cue("interact", recorder, "harvest_moon")
+	# The old implementation played a lamp cue merely because a refusal named
+	# a lamp. Both an unaffordable restoration and a non-crop target must refuse.
+	garden.resources = {"dew": 0, "spores": 0}
+	player.global_position = farm.to_global(garden.lanterns[1]["position"]) + Vector2(0, 16)
+	await _press_and_expect_cue("interact", recorder, "denied")
+	await _press_and_expect_cue("nourish", recorder, "denied")
+	await _press_and_expect_cue("clear_crop", recorder, "denied")
+	player.global_position = farm.to_global(garden.lanterns[0]["position"]) + Vector2(0, 16)
+	await _press_and_expect_cue("interact", recorder, "lamp_off")
+	await _press_and_expect_cue("interact", recorder, "lamp_on")
+	garden.resources = {"dew": 8, "spores": 12}
+	player.global_position = farm.to_global(garden.lanterns[1]["position"]) + Vector2(0, 16)
+	await _press_and_expect_cue("interact", recorder, "restore")
+	player.global_position = farm.to_global(garden.lanterns[2]["position"]) + Vector2(0, 16)
+	await _press_and_expect_cue("interact", recorder, "complete")
+	await _press_and_expect_cue("interact", recorder, "lamp_off")
+	await _press_and_expect_cue("light_overlay", recorder, "overlay")
+	await _press_and_expect_cue("pause", recorder, "pause")
+	await _press_and_expect_cue("interact", recorder, "")
+	await _press_and_expect_cue("clear_crop", recorder, "")
+	await _press_and_expect_cue("pause", recorder, "resume")
+	game.set("music", original)
+	recorder.queue_free()
+	player.global_position = farm.get_spawn_position()
+
+
+func _press_and_expect_cue(action: StringName, recorder: CueRecorder, expected: String) -> void:
+	recorder.requested.clear()
+	await _press_action(action)
+	var wanted: Array[String] = []
+	if not expected.is_empty():
+		wanted.append(expected)
+	_check(recorder.requested == wanted, "%s 音效应为 %s，实际 %s。" % [action, str(wanted), str(recorder.requested)])
 
 
 func _walk(action: StringName, frames: int) -> void:

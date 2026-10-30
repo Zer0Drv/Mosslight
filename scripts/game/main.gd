@@ -38,6 +38,8 @@ func _ready() -> void:
 	hud.seed_selected.connect(_select_seed)
 	hud.resume_requested.connect(_toggle_pause)
 	hud.mute_requested.connect(_toggle_mute)
+	hud.appearance_selected.connect(_select_appearance)
+	hud.set_appearance(player.appearance)
 	hud.set_muted(music.is_muted())
 	_refresh_hud()
 	get_tree().auto_accept_quit = false
@@ -52,6 +54,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if get_tree().paused or garden == null:
 		return
+	music.update_footsteps(player.global_position, delta)
 	garden.advance(delta)
 	farm.set_interaction_target(player.get_interaction_position())
 	_ui_clock += delta
@@ -84,25 +87,24 @@ func _unhandled_input(event: InputEvent) -> void:
 		_show_light = not _show_light
 		farm.set_light_overlay(_show_light)
 		hud.set_light_overlay(_show_light)
+		music.play_cue("overlay")
 	elif event.is_action_pressed("interact"):
-		var previous_harvest := garden.total_harvests
-		var previous_lights := garden.get_restored_count()
+		var before := garden.snapshot()
 		var message := farm.interact(player.get_interaction_position())
-		if garden.total_harvests == previous_harvest and garden.get_restored_count() == previous_lights:
-			if message.contains("播") or message.contains("种下") or message.contains("栽下"):
-				music.play_cue("plant")
-			elif message.contains("灯"):
-				music.play_cue("toggle")
+		var cue := _interaction_cue(before, garden.snapshot())
+		if not cue.is_empty():
+			music.play_cue(cue)
 		hud.show_message(message)
 		_save_progress()
 	elif event.is_action_pressed("nourish"):
 		var before := int(garden.resources.dew)
 		hud.show_message(farm.nourish(player.get_interaction_position()))
-		music.play_cue("plant" if int(garden.resources.dew) < before else "error")
+		music.play_cue("nourish" if int(garden.resources.dew) < before else "denied")
 		_save_progress()
 	elif event.is_action_pressed("clear_crop"):
+		var before := _planted_count(garden.snapshot())
 		hud.show_message(farm.clear_crop(player.get_interaction_position()))
-		music.play_cue("clear")
+		music.play_cue("clear" if _planted_count(garden.snapshot()) < before else "denied")
 		_save_progress()
 	else:
 		return
@@ -113,15 +115,28 @@ func _unhandled_input(event: InputEvent) -> void:
 func _select_seed(kind: String) -> void:
 	if get_tree().paused:
 		return
+	var previous := garden.selected_crop
 	garden.select_crop(kind)
-	music.play_cue("toggle")
+	if garden.selected_crop == previous:
+		return
+	music.play_cue("seed_select")
 	_refresh_hud()
 	_save_progress()
+
+
+func _select_appearance(index: int) -> void:
+	if not get_tree().paused or index < 0 or index > 1 or player.appearance == index:
+		return
+	player.appearance = index
+	player.queue_redraw()
+	hud.set_appearance(index)
+	music.play_cue("seed_select")
 
 
 func _toggle_pause() -> void:
 	get_tree().paused = not get_tree().paused
 	hud.set_paused(get_tree().paused)
+	music.play_cue("pause" if get_tree().paused else "resume")
 	if get_tree().paused:
 		_save_progress()
 
@@ -144,15 +159,40 @@ func _on_garden_changed() -> void:
 	_save_dirty = true
 
 
-func _on_harvest_collected(_kind: String, _amount: int) -> void:
-	music.play_cue("harvest")
+func _on_harvest_collected(kind: String, _amount: int) -> void:
+	music.play_cue("harvest_moon" if kind == "moon_moss" else "harvest_bell")
 	player.celebrate()
 
 
 func _on_lantern_restored(_index: int) -> void:
-	music.play_cue("restore")
+	music.play_cue("complete" if garden.get_restored_count() == garden.lanterns.size() else "restore")
 	player.celebrate()
 	hud.celebrate_restoration(garden.get_restored_count())
+
+
+static func _interaction_cue(before: Dictionary, after: Dictionary) -> String:
+	# Classify committed state changes, never translated UI prose. Harvest and
+	# restoration signals already request their own cue, including completion.
+	if int(after["total_harvests"]) > int(before["total_harvests"]):
+		return ""
+	for index in range(after["lanterns"].size()):
+		var old_lamp: Dictionary = before["lanterns"][index]
+		var new_lamp: Dictionary = after["lanterns"][index]
+		if bool(new_lamp["restored"]) != bool(old_lamp["restored"]):
+			return ""
+		if bool(new_lamp["lit"]) != bool(old_lamp["lit"]):
+			return "lamp_on" if bool(new_lamp["lit"]) else "lamp_off"
+	if _planted_count(after) > _planted_count(before):
+		return "plant"
+	return "denied"
+
+
+static func _planted_count(snapshot: Dictionary) -> int:
+	var count := 0
+	for plot: Dictionary in snapshot["plots"]:
+		if not String(plot["crop"]).is_empty():
+			count += 1
+	return count
 
 
 func _save_progress() -> void:

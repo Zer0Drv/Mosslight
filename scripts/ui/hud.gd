@@ -5,6 +5,7 @@ extends CanvasLayer
 signal seed_selected(kind: String)
 signal resume_requested
 signal mute_requested
+signal appearance_selected(index: int)
 
 const INK := Color("#101e2d")
 const PAPER := Color("#e2e5d1")
@@ -29,6 +30,7 @@ var _pause_overlay: ColorRect
 var _mute_button: Button
 var _light_hint: Label
 var _completion: Panel
+var _appearance_buttons: Array[Button] = []
 var _message_time := 0.0
 var _completion_time := 0.0
 var _selected_crop := ""
@@ -36,22 +38,15 @@ var _selected_crop := ""
 
 class SeedGlyph:
 	extends Control
+	const ICONS: Array[Texture2D] = [
+		preload("res://assets/art/runtime/icon_dew.png"), preload("res://assets/art/runtime/icon_spores.png"),
+		preload("res://assets/art/runtime/icon_seed_moon.png"), preload("res://assets/art/runtime/icon_seed_bell.png"),
+	]
 	var moon := true
+	var seed := false
 	func _draw() -> void:
-		if moon:
-			draw_rect(Rect2(5, 4, 2, 2), Color("#b2f4de"))
-			draw_rect(Rect2(3, 6, 6, 3), Color("#87cfc7"))
-			draw_rect(Rect2(2, 9, 8, 4), Color("#68a8b0"))
-			draw_rect(Rect2(4, 10, 3, 2), Color("#e0f5db"))
-			draw_rect(Rect2(3, 14, 6, 2), Color("#3c666a"))
-		else:
-			draw_rect(Rect2(6, 3, 2, 11), Color("#78a28b"))
-			draw_rect(Rect2(2, 5, 6, 2), Color("#acc098"))
-			draw_rect(Rect2(2, 7, 5, 5), Color("#d8a46b"))
-			draw_rect(Rect2(3, 7, 3, 3), Color("#ffdda0"))
-			draw_rect(Rect2(7, 10, 5, 4), Color("#f0ba75"))
-			draw_rect(Rect2(8, 10, 3, 2), Color("#fff0bf"))
-			draw_rect(Rect2(4, 15, 6, 2), Color("#4c6b59"))
+		var index := (0 if moon else 1) + (2 if seed else 0)
+		draw_texture(ICONS[index], Vector2.ZERO)
 
 
 func _ready() -> void:
@@ -128,6 +123,12 @@ func _ready() -> void:
 
 	_completion = _panel(_root, Rect2(170, 110, 300, 86))
 	_completion.visible = false
+	var pouch := TextureRect.new()
+	pouch.name = "SporePouch"
+	pouch.texture = preload("res://assets/art/runtime/spore_pouch.png")
+	pouch.position = Vector2(38, 10)
+	pouch.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_completion.add_child(pouch)
 	_label(_completion, "灯 路 已 重 连", Vector2(75, 12), 19, WARM)
 	var end_detail := _label(_completion, "林中的归途亮起来了。\n继续照料灯圃，让明暗各得其所。", Vector2(16, 43), 11, PAPER)
 	end_detail.size = Vector2(268, 37)
@@ -189,6 +190,12 @@ func set_muted(is_muted: bool) -> void:
 	_mute_button.text = "声音：关  [M]" if is_muted else "声音：开  [M]"
 
 
+func set_appearance(index: int) -> void:
+	for item in _appearance_buttons.size():
+		_appearance_buttons[item].set_pressed_no_signal(item == index)
+		_style_seed(_appearance_buttons[item], item == index, MOON if item == 0 else Color("c6b3ef"))
+
+
 func set_light_overlay(is_visible: bool) -> void:
 	_light_hint.visible = is_visible
 
@@ -205,15 +212,40 @@ func _build_pause() -> void:
 	_pause_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_pause_overlay.color = Color(0.025, 0.055, 0.09, 0.88)
 	_pause_overlay.visible = false
-	var card := _panel(_pause_overlay, Rect2(145, 53, 350, 254))
-	_label(card, "让林子歇一会儿", Vector2(70, 20), 23, PAPER)
-	_label(card, "月苔依偎阴影，灯铃追随暖光。", Vector2(74, 65), 11, MOON)
-	var help := _label(card, "1 / 2  选择植物，面朝土床按 E 种下或收获\nE  开关苔灯；修复旧灯需要 6 灯孢 + 4 露滴\nQ  花 1 露滴促长 35%  ·  R 移除未熟植物\nTab  查看光照范围  ·  F11 全屏\n灯圃自动保存，暂停时植物也会休息。", Vector2(26, 96), 11, QUIET)
+	var card := _panel(_pause_overlay, Rect2(130, 20, 380, 320))
+	_label(card, "让林子歇一会儿", Vector2(84, 14), 23, PAPER)
+	_label(card, "月苔依偎阴影，灯铃追随暖光。", Vector2(90, 50), 11, MOON)
+	var help := _label(card, "1 / 2  选择植物，面朝土床按 E 种下或收获\nE  开关苔灯；修复旧灯需要 6 灯孢 + 4 露滴\nQ  花 1 露滴促长 35%  ·  R 移除未熟植物\nTab  查看光照范围  ·  F11 全屏\n灯圃自动保存，暂停时植物也会休息。", Vector2(26, 76), 11, QUIET)
 	help.add_theme_constant_override("line_spacing", 5)
+	_label(card, "巡灯人外观", Vector2(26, 181), 12, PAPER)
+	_label(card, "本次游玩生效", Vector2(267, 184), 10, QUIET)
+	var appearance_group := ButtonGroup.new()
+	for index in 2:
+		var option := Button.new()
+		option.name = "AppearanceMoss" if index == 0 else "AppearanceStar"
+		card.add_child(option)
+		option.position = Vector2(26 + index * 170, 204)
+		option.size = Vector2(158, 58)
+		option.focus_mode = Control.FOCUS_ALL
+		option.toggle_mode = true
+		option.button_group = appearance_group
+		var portrait := TextureRect.new()
+		var frame := AtlasTexture.new()
+		frame.atlas = FarmPlayer.MOSS_ATLAS if index == 0 else FarmPlayer.STAR_ATLAS
+		frame.region = Rect2(0, 0, 32, 40)
+		portrait.texture = frame
+		portrait.position = Vector2(12, 6)
+		portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		option.add_child(portrait)
+		_label(option, "苔林装" if index == 0 else "星夜装", Vector2(60, 13), 14, MOON if index == 0 else Color("c6b3ef"))
+		_label(option, "绿兜帽 · 桃领巾" if index == 0 else "紫尖帽 · 星夜衣", Vector2(60, 35), 9, QUIET)
+		option.pressed.connect(_choose_appearance.bind(index))
+		_appearance_buttons.append(option)
+	set_appearance(0)
 	var resume := Button.new()
 	card.add_child(resume)
-	resume.position = Vector2(26, 208)
-	resume.size = Vector2(174, 29)
+	resume.position = Vector2(26, 278)
+	resume.size = Vector2(203, 29)
 	resume.text = "返回灯圃  [Esc]"
 	resume.focus_mode = Control.FOCUS_NONE
 	resume.add_theme_stylebox_override("normal", _style(Color("#2a4748"), MOON))
@@ -221,12 +253,16 @@ func _build_pause() -> void:
 	resume.pressed.connect(func() -> void: resume_requested.emit())
 	_mute_button = Button.new()
 	card.add_child(_mute_button)
-	_mute_button.position = Vector2(211, 208)
+	_mute_button.position = Vector2(240, 278)
 	_mute_button.size = Vector2(112, 29)
 	_mute_button.focus_mode = Control.FOCUS_NONE
 	_mute_button.add_theme_stylebox_override("normal", _style(INK, QUIET))
 	_mute_button.add_theme_stylebox_override("hover", _style(Color("#2a404d"), PAPER))
 	_mute_button.pressed.connect(func() -> void: mute_requested.emit())
+
+
+func _choose_appearance(index: int) -> void:
+	appearance_selected.emit(index)
 
 
 func _seed_button(at: Vector2, moon: bool, title: String, description: String) -> Button:
@@ -235,7 +271,7 @@ func _seed_button(at: Vector2, moon: bool, title: String, description: String) -
 	button.position = at
 	button.size = Vector2(106, 50)
 	button.focus_mode = Control.FOCUS_NONE
-	_glyph(button, Vector2(8, 8), moon)
+	_glyph(button, Vector2(8, 8), moon, true)
 	_label(button, title, Vector2(28, 7), 13, MOON if moon else WARM)
 	_label(button, description, Vector2(8, 31), 9, QUIET)
 	return button
@@ -248,9 +284,10 @@ func _style_seed(button: Button, selected: bool, accent: Color) -> void:
 	button.add_theme_stylebox_override("pressed", _style(Color("#39575c"), accent))
 
 
-func _glyph(parent: Node, at: Vector2, moon: bool) -> void:
+func _glyph(parent: Node, at: Vector2, moon: bool, seed: bool = false) -> void:
 	var glyph := SeedGlyph.new()
 	glyph.moon = moon
+	glyph.seed = seed
 	glyph.position = at
 	glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(glyph)

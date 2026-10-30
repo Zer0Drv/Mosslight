@@ -1,0 +1,592 @@
+{
+  "columns": [
+    "idle_or_contact",
+    "walk_1",
+    "walk_2",
+    "walk_3"
+  ],
+  "foot_anchor": [
+    16,
+    36
+  ],
+  "frame_size": [
+    32,
+    40
+  ],
+  "generator": "tools/prepare_character_art.gd",
+  "method": "Godot Image crop + nearest-neighbor resize; source RGBA preserved",
+  "packs": [
+    {
+      "frames": [
+        {
+          "column": 0,
+          "direction": "down",
+          "row": 0,
+          "runtime_rect": [
+            9,
+            10,
+            16,
+            26
+          ],
+          "source_bounds": [
+            88,
+            49,
+            156,
+            251
+          ]
+        },
+        {
+          "column": 1,
+          "direction": "down",
+          "row": 0,
+          "runtime_rect": [
+            9,
+            10,
+            16,
+            26
+          ],
+          "source_bounds": [
+            398,
+            49,
+            157,
+            251
+          ]
+        },
+        {
+          "column": 2,
+          "direction": "down",
+          "row": 0,
+          "runtime_rect": [
+            8,
+            10,
+            17,
+            26
+          ],
+          "source_bounds": [
+            694,
+            49,
+            165,
+            251
+          ]
+        },
+        {
+          "column": 3,
+          "direction": "down",
+          "row": 0,
+          "runtime_rect": [
+            8,
+            10,
+            16,
+            26
+          ],
+          "source_bounds": [
+            1011,
+            49,
+            158,
+            251
+          ]
+        },
+        {
+          "column": 0,
+          "direction": "right",
+          "row": 1,
+          "runtime_rect": [
+            7,
+            10,
+            17,
+            26
+          ],
+          "source_bounds": [
+            83,
+            341,
+            172,
+            256
+          ]
+        },
+        {
+          "column": 1,
+          "direction": "right",
+          "row": 1,
+          "runtime_rect": [
+            8,
+            10,
+            18,
+            26
+          ],
+          "source_bounds": [
+            393,
+            342,
+            174,
+            255
+          ]
+        },
+        {
+          "column": 2,
+          "direction": "right",
+          "row": 1,
+          "runtime_rect": [
+            7,
+            10,
+            18,
+            26
+          ],
+          "source_bounds": [
+            699,
+            342,
+            174,
+            255
+          ]
+        },
+        {
+          "column": 3,
+          "direction": "right",
+          "row": 1,
+          "runtime_rect": [
+            7,
+            10,
+            17,
+            26
+          ],
+          "source_bounds": [
+            1017,
+            342,
+            167,
+            256
+          ]
+        },
+        {
+          "column": 0,
+          "direction": "left",
+          "row": 2,
+          "runtime_rect": [
+            8,
+            10,
+            17,
+            26
+          ],
+          "source_bounds": [
+            76,
+            648,
+            169,
+            253
+          ]
+        },
+        {
+          "column": 1,
+          "direction": "left",
+          "row": 2,
+          "runtime_rect": [
+            7,
+            10,
+            17,
+            26
+          ],
+          "source_bounds": [
+            388,
+            647,
+            166,
+            254
+          ]
+        },
+        {
+          "column": 2,
+          "direction": "left",
+          "row": 2,
+          "runtime_rect": [
+            7,
+            10,
+            17,
+            26
+          ],
+          "source_bounds": [
+            694,
+            647,
+            169,
+            254
+          ]
+        },
+        {
+          "column": 3,
+          "direction": "left",
+          "row": 2,
+          "runtime_rect": [
+            7,
+            10,
+            17,
+            26
+          ],
+          "source_bounds": [
+            1007,
+            647,
+            168,
+            255
+          ]
+        },
+        {
+          "column": 0,
+          "direction": "up",
+          "row": 3,
+          "runtime_rect": [
+            7,
+            10,
+            17,
+            26
+          ],
+          "source_bounds": [
+            81,
+            942,
+            164,
+            257
+          ]
+        },
+        {
+          "column": 1,
+          "direction": "up",
+          "row": 3,
+          "runtime_rect": [
+            6,
+            10,
+            17,
+            26
+          ],
+          "source_bounds": [
+            386,
+            942,
+            165,
+            260
+          ]
+        },
+        {
+          "column": 2,
+          "direction": "up",
+          "row": 3,
+          "runtime_rect": [
+            7,
+            10,
+            18,
+            26
+          ],
+          "source_bounds": [
+            697,
+            942,
+            176,
+            260
+          ]
+        },
+        {
+          "column": 3,
+          "direction": "up",
+          "row": 3,
+          "runtime_rect": [
+            7,
+            10,
+            17,
+            26
+          ],
+          "source_bounds": [
+            1014,
+            942,
+            170,
+            260
+          ]
+        }
+      ],
+      "name": "keeper_moss",
+      "output": "res://assets/art/runtime/keeper_moss.png",
+      "source": "res://assets/art/source/keeper_moss_v1.png",
+      "source_size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "frames": [
+        {
+          "column": 0,
+          "direction": "down",
+          "row": 0,
+          "runtime_rect": [
+            6,
+            6,
+            19,
+            30
+          ],
+          "source_bounds": [
+            82,
+            38,
+            166,
+            268
+          ]
+        },
+        {
+          "column": 1,
+          "direction": "down",
+          "row": 0,
+          "runtime_rect": [
+            6,
+            6,
+            19,
+            30
+          ],
+          "source_bounds": [
+            395,
+            38,
+            171,
+            272
+          ]
+        },
+        {
+          "column": 2,
+          "direction": "down",
+          "row": 0,
+          "runtime_rect": [
+            7,
+            6,
+            18,
+            30
+          ],
+          "source_bounds": [
+            688,
+            38,
+            167,
+            272
+          ]
+        },
+        {
+          "column": 3,
+          "direction": "down",
+          "row": 0,
+          "runtime_rect": [
+            6,
+            6,
+            19,
+            30
+          ],
+          "source_bounds": [
+            999,
+            38,
+            174,
+            272
+          ]
+        },
+        {
+          "column": 0,
+          "direction": "right",
+          "row": 1,
+          "runtime_rect": [
+            4,
+            6,
+            22,
+            30
+          ],
+          "source_bounds": [
+            63,
+            348,
+            197,
+            264
+          ]
+        },
+        {
+          "column": 1,
+          "direction": "right",
+          "row": 1,
+          "runtime_rect": [
+            3,
+            6,
+            23,
+            30
+          ],
+          "source_bounds": [
+            375,
+            348,
+            202,
+            266
+          ]
+        },
+        {
+          "column": 2,
+          "direction": "right",
+          "row": 1,
+          "runtime_rect": [
+            4,
+            6,
+            22,
+            30
+          ],
+          "source_bounds": [
+            686,
+            348,
+            195,
+            264
+          ]
+        },
+        {
+          "column": 3,
+          "direction": "right",
+          "row": 1,
+          "runtime_rect": [
+            3,
+            6,
+            23,
+            30
+          ],
+          "source_bounds": [
+            998,
+            347,
+            202,
+            267
+          ]
+        },
+        {
+          "column": 0,
+          "direction": "left",
+          "row": 2,
+          "runtime_rect": [
+            7,
+            6,
+            22,
+            30
+          ],
+          "source_bounds": [
+            77,
+            647,
+            202,
+            270
+          ]
+        },
+        {
+          "column": 1,
+          "direction": "left",
+          "row": 2,
+          "runtime_rect": [
+            6,
+            6,
+            22,
+            30
+          ],
+          "source_bounds": [
+            390,
+            647,
+            201,
+            270
+          ]
+        },
+        {
+          "column": 2,
+          "direction": "left",
+          "row": 2,
+          "runtime_rect": [
+            6,
+            6,
+            21,
+            30
+          ],
+          "source_bounds": [
+            690,
+            647,
+            193,
+            270
+          ]
+        },
+        {
+          "column": 3,
+          "direction": "left",
+          "row": 2,
+          "runtime_rect": [
+            6,
+            6,
+            22,
+            30
+          ],
+          "source_bounds": [
+            1002,
+            647,
+            197,
+            270
+          ]
+        },
+        {
+          "column": 0,
+          "direction": "up",
+          "row": 3,
+          "runtime_rect": [
+            6,
+            6,
+            20,
+            30
+          ],
+          "source_bounds": [
+            79,
+            943,
+            173,
+            260
+          ]
+        },
+        {
+          "column": 1,
+          "direction": "up",
+          "row": 3,
+          "runtime_rect": [
+            6,
+            6,
+            20,
+            30
+          ],
+          "source_bounds": [
+            394,
+            943,
+            171,
+            261
+          ]
+        },
+        {
+          "column": 2,
+          "direction": "up",
+          "row": 3,
+          "runtime_rect": [
+            6,
+            6,
+            20,
+            30
+          ],
+          "source_bounds": [
+            698,
+            944,
+            178,
+            262
+          ]
+        },
+        {
+          "column": 3,
+          "direction": "up",
+          "row": 3,
+          "runtime_rect": [
+            6,
+            6,
+            21,
+            30
+          ],
+          "source_bounds": [
+            1009,
+            943,
+            186,
+            265
+          ]
+        }
+      ],
+      "name": "keeper_star",
+      "output": "res://assets/art/runtime/keeper_star.png",
+      "source": "res://assets/art/source/keeper_star_v1.png",
+      "source_size": [
+        1254,
+        1254
+      ]
+    }
+  ],
+  "rows": [
+    "down",
+    "right",
+    "left",
+    "up"
+  ]
+}

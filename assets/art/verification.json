@@ -1,0 +1,293 @@
+{
+  "date": "2026-10-31",
+  "engine": "Godot 4.7.2 stable standard",
+  "checks": {
+    "runtime_pngs": 22,
+    "character_frames": 32,
+    "import_exit": 0,
+    "smoke_test": "PASS including audio events and 60/120fps footsteps",
+    "save_test": "PASS",
+    "rendering": "OpenGL 3.3 Compatibility, NVIDIA RTX 2060",
+    "visual_review": [
+      "previews/gameplay_moss.png",
+      "previews/gameplay_states.png",
+      "previews/asset_board.png",
+      "previews/appearance_menu.png",
+      "previews/restoration_complete.png"
+    ],
+    "audio": "20 WAV reproducible SHA256, PCM peak, DC, silence and seam checks passed; listening judgement remains subjective",
+    "environment_note": "System root certificate store error printed; no script or resource errors in final import and test logs. Isolated APPDATA/LOCALAPPDATA under logs/godot-home and --fresh-garden protect real user data.",
+    "appearance_menu": "PASS: paused button signals change outfit, UI selection synchronized, no garden/collision mutation, selection retained after resume",
+    "runtime_integration": "22/22 runtime PNG and 18/18 gameplay WAV referenced by game scripts; audition and music sketch excluded"
+  },
+  "sources": [
+    {
+      "file": "garden_v1.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "32e1fdbc42a4a1bb69cb09f20e39d6c7e4cd657cb3968ad14b6d7bf032e8b99e"
+    },
+    {
+      "file": "keeper_moss_v1.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "604faaf7d5671efab0a18cc69cd8a1a20a8005694cbaaf1fcffa869d1214176d"
+    },
+    {
+      "file": "keeper_star_v1.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "301dccc7dc7efba0e56848ff548640a5657023d6d7a5b315d1eaccc7fad94459"
+    },
+    {
+      "file": "woodland_v1.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "4b1e138fcf365e04d5e35b80e7d6c9ac517c831144fcf0c0cb190c3bb8816e34"
+    }
+  ],
+  "runtime": [
+    {
+      "file": "cottage.png",
+      "size": [
+        128,
+        112
+      ],
+      "sha256": "f947b08da18e23e48a5127f9e5b6eabafee74b8173c10b5f36f2a000c6d68c55",
+      "transparent_pixels": 2605
+    },
+    {
+      "file": "glow_bell_0.png",
+      "size": [
+        16,
+        16
+      ],
+      "sha256": "a594b3ac8252f8b1811a3745e08e49bc1ff98e05a33c5033059d9cf7ab2dedff",
+      "transparent_pixels": 243
+    },
+    {
+      "file": "glow_bell_1.png",
+      "size": [
+        16,
+        16
+      ],
+      "sha256": "b24315522da2c55376cf3483c3017948d4fe8c0b56327f2471c737d48fbf17cc",
+      "transparent_pixels": 220
+    },
+    {
+      "file": "glow_bell_2.png",
+      "size": [
+        16,
+        16
+      ],
+      "sha256": "74ef335b8648f98192afe7909d1a59022c2467beb277795973936a7ebe4d311e",
+      "transparent_pixels": 182
+    },
+    {
+      "file": "glow_bell_3.png",
+      "size": [
+        16,
+        16
+      ],
+      "sha256": "033e1eb6ddfda0e67a9c80107cb70225c2eea5cf2d9ffade89d521c34c31184a",
+      "transparent_pixels": 127
+    },
+    {
+      "file": "icon_dew.png",
+      "size": [
+        16,
+        16
+      ],
+      "sha256": "3dbfc4b7e8ae10e82900dded493405102d6da502d522e1ed283b1ecabf79d58b",
+      "transparent_pixels": 81
+    },
+    {
+      "file": "icon_seed_bell.png",
+      "size": [
+        16,
+        16
+      ],
+      "sha256": "98cba26a963b896b355dc9102aca9be6e37f5bce2a19c86f8684e785619b072c",
+      "transparent_pixels": 92
+    },
+    {
+      "file": "icon_seed_moon.png",
+      "size": [
+        16,
+        16
+      ],
+      "sha256": "9a89f0752562aa5d94c951d762051e7a825ac36ba8eb469211da82d9c0cf0e4d",
+      "transparent_pixels": 103
+    },
+    {
+      "file": "icon_spores.png",
+      "size": [
+        16,
+        16
+      ],
+      "sha256": "8400fde0824aab79e7018721b7b9997f328fb0b78e6767772c921ab2eb77eb82",
+      "transparent_pixels": 114
+    },
+    {
+      "file": "keeper_moss.png",
+      "size": [
+        128,
+        160
+      ],
+      "sha256": "1687658c0d9ba75fbfe82e6f80a68763bc6b2926ed682409b71b21d6f4888169",
+      "transparent_pixels": 14893,
+      "frame_foot_bottoms": [
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35
+      ]
+    },
+    {
+      "file": "keeper_star.png",
+      "size": [
+        128,
+        160
+      ],
+      "sha256": "34d767d830ca28e5c5334c469d2f5cab9726d7a05013669334cabe53e0edf01d",
+      "transparent_pixels": 13337,
+      "frame_foot_bottoms": [
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35
+      ]
+    },
+    {
+      "file": "lantern_broken.png",
+      "size": [
+        32,
+        48
+      ],
+      "sha256": "c95bf3c8332b784610c028fdb1ddb5d16534d1282c97f956f91654d6a30cf78a",
+      "transparent_pixels": 718
+    },
+    {
+      "file": "lantern_off.png",
+      "size": [
+        32,
+        48
+      ],
+      "sha256": "01d40188ca40c1c7fc141bc79240d0eed4f086149e2adacb55d5bfe43216e0e0",
+      "transparent_pixels": 718
+    },
+    {
+      "file": "lantern_on.png",
+      "size": [
+        32,
+        48
+      ],
+      "sha256": "9c0880fa4b06c6d7847a00d0614bb3100a23a1713269167a9ca61dde216adc87",
+      "transparent_pixels": 721
+    },
+    {
+      "file": "moon_moss_0.png",
+      "size": [
+        16,
+        16
+      ],
+      "sha256": "e580a0f78c8ed77c09ab75839a9b2747419109178a034391aa0b38b0d1397a7c",
+      "transparent_pixels": 246
+    },
+    {
+      "file": "moon_moss_1.png",
+      "size": [
+        16,
+        16
+      ],
+      "sha256": "b884ca61747a5b6547fff23cc19c31b83be49c6e415de51a77e43fd6fb755757",
+      "transparent_pixels": 233
+    },
+    {
+      "file": "moon_moss_2.png",
+      "size": [
+        16,
+        16
+      ],
+      "sha256": "0d945c935fecb7806cc0927aa41ca15a5671aef15de1391cd37d853c13619e0d",
+      "transparent_pixels": 205
+    },
+    {
+      "file": "moon_moss_3.png",
+      "size": [
+        16,
+        16
+      ],
+      "sha256": "ffbf1ed9064615104d4e19072c746749bcb500f14d6d51fd606ec874b66fbdab",
+      "transparent_pixels": 183
+    },
+    {
+      "file": "mushroom_fern.png",
+      "size": [
+        32,
+        28
+      ],
+      "sha256": "f6f9b27e15cd7adfa715d8e107c95e7c027fcf1969b65202da296eafe2a474b8",
+      "transparent_pixels": 407
+    },
+    {
+      "file": "spore_pouch.png",
+      "size": [
+        24,
+        24
+      ],
+      "sha256": "5662ed37a15c0f51ce9b5991743fc88c8595bb620e866c231c8afdbedd010edb",
+      "transparent_pixels": 295
+    },
+    {
+      "file": "stump.png",
+      "size": [
+        40,
+        32
+      ],
+      "sha256": "2f7d1d0eff1fc7c8a9f6fac4f169f1d534b6d056db866d6964dc08a633869452",
+      "transparent_pixels": 772
+    },
+    {
+      "file": "tree.png",
+      "size": [
+        112,
+        128
+      ],
+      "sha256": "1071862a6bfe2f39cfdcb56923b58303db86d1d4e1ec2cf483601987961326d8",
+      "transparent_pixels": 5545
+    }
+  ]
+}
